@@ -53,20 +53,22 @@ export function BlockPalette({ selectedBlock, onSelectBlock }: BlockPaletteProps
             <Gem className="w-5 h-5 text-accent" />
             Block Palette
         </h3>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-x-2 gap-y-4">
             {blockTypes.map(b_type => (
-            <button
-                key={b_type}
-                onClick={() => onSelectBlock(b_type)}
-                className={cn(
-                'w-12 h-12 rounded-md border-2 border-r-4 border-b-4 transition-all',
-                blockStyles[b_type],
-                selectedBlock === b_type
-                    ? 'border-accent ring-2 ring-accent'
-                    : 'border-input hover:border-accent'
-                )}
-                aria-label={`Select ${b_type} block`}
-            />
+            <div key={b_type} className="flex flex-col items-center gap-1.5">
+                <button
+                    onClick={() => onSelectBlock(b_type)}
+                    className={cn(
+                    'w-12 h-12 rounded-md border-2 border-r-4 border-b-4 transition-all',
+                    blockStyles[b_type],
+                    selectedBlock === b_type
+                        ? 'border-accent ring-2 ring-accent'
+                        : 'border-input hover:border-accent'
+                    )}
+                    aria-label={`Select ${b_type} block`}
+                />
+                <p className="text-xs capitalize text-muted-foreground">{b_type}</p>
+            </div>
             ))}
         </div>
     </div>
