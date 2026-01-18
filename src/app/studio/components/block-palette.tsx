@@ -17,17 +17,17 @@ export type BlockColor =
   | 'bedrock';
 
 export const blockStyles: Record<BlockColor, string> = {
-  stone: 'bg-stone-500 border-t-stone-400 border-l-stone-400 border-b-stone-600 border-r-stone-600 shadow-inner',
-  dirt: 'bg-amber-800 border-t-amber-700 border-l-amber-700 border-b-amber-950 border-r-amber-950 shadow-inner',
-  grass: 'bg-lime-600 border-t-lime-500 border-l-lime-500 border-b-lime-700 border-r-lime-700 shadow-inner',
-  water: 'bg-sky-500/90 border-t-sky-400/90 border-l-sky-400/90 border-b-sky-600/90 border-r-sky-600/90 shadow-inner',
-  sand: 'bg-yellow-400 border-t-yellow-300 border-l-yellow-300 border-b-yellow-500 border-r-yellow-500 shadow-inner',
-  wood: 'bg-amber-700 border-t-amber-600 border-l-amber-600 border-b-amber-800 border-r-amber-800 shadow-inner',
-  leaves: 'bg-green-700 border-t-green-600 border-l-green-600 border-b-green-800 border-r-green-800 shadow-inner',
-  brick: 'bg-red-800 border-t-red-700 border-l-red-700 border-b-red-900 border-r-red-900 shadow-inner',
-  glass: 'bg-sky-200/50 border-t-sky-100/50 border-l-sky-100/50 border-b-sky-300/50 border-r-sky-300/50 backdrop-blur-sm',
-  gold: 'bg-yellow-500 border-t-yellow-400 border-l-yellow-400 border-b-yellow-600 border-r-yellow-600 shadow-inner',
-  bedrock: 'bg-gray-800 border-t-gray-700 border-l-gray-700 border-b-gray-900 border-r-gray-900 shadow-inner',
+  stone: 'bg-gradient-to-br from-stone-500 to-stone-600 border-t-stone-400 border-l-stone-400 border-b-stone-700 border-r-stone-700 shadow-inner',
+  dirt: 'bg-gradient-to-br from-yellow-900 to-yellow-950 border-t-yellow-800 border-l-yellow-800 border-b-black/40 border-r-black/40 shadow-inner',
+  grass: "bg-gradient-to-b from-lime-500 to-lime-600 border-t-lime-400 border-l-lime-400 border-b-lime-700 border-r-lime-700 shadow-inner",
+  water: 'bg-sky-500/80 border-t-sky-400/80 border-l-sky-400/80 border-b-sky-600/80 border-r-sky-600/80 shadow-inner',
+  sand: 'bg-gradient-to-br from-yellow-300 to-yellow-400 border-t-yellow-200 border-l-yellow-200 border-b-yellow-500 border-r-yellow-500 shadow-inner',
+  wood: 'bg-gradient-to-br from-amber-600 to-amber-800 border-t-amber-500 border-l-amber-500 border-b-amber-900 border-r-amber-900 shadow-inner',
+  leaves: 'bg-gradient-to-br from-green-600 to-green-800 border-t-green-500 border-l-green-500 border-b-green-900 border-r-green-900 shadow-inner opacity-90',
+  brick: 'bg-red-800 border-t-red-700 border-l-red-700 border-b-red-900 border-r-red-900 shadow-inner bg-gradient-to-br from-red-700 to-red-900',
+  glass: 'bg-sky-200/30 border-t-sky-100/40 border-l-sky-100/40 border-b-sky-300/40 border-r-sky-300/40 backdrop-blur-sm',
+  gold: 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-t-yellow-300 border-l-yellow-300 border-b-yellow-700 border-r-yellow-700 shadow-inner',
+  bedrock: 'bg-gradient-to-br from-gray-700 to-gray-900 border-t-gray-600 border-l-gray-600 border-b-black/80 border-r-black/80 shadow-inner',
 };
 
 

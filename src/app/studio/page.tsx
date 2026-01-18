@@ -130,37 +130,41 @@ export default function StudioPage() {
   };
 
   const handleCellInteraction = (row: number, col: number) => {
-    const newGrid = grid.map(r => r.map(c => ({...c})));
-    let changed = false;
-    const currentCell = newGrid[row][col];
+    setGrid(currentGrid => {
+      const currentCell = currentGrid[row][col];
+      
+      const newCell = { ...currentCell };
+      let changed = false;
 
-    if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
-      if (currentCell.color !== 'bedrock' && currentCell.color !== selectedBlock) {
-        currentCell.color = selectedBlock;
-        changed = true;
-      }
-    } else if (selectedTool === 'Mob Tool') {
-      if (currentCell.mob !== selectedMob) {
-          currentCell.mob = selectedMob;
+      if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
+        if (currentCell.color !== 'bedrock' && currentCell.color !== selectedBlock) {
+          newCell.color = selectedBlock;
           changed = true;
+        }
+      } else if (selectedTool === 'Mob Tool') {
+        if (currentCell.mob !== selectedMob) {
+          newCell.mob = selectedMob;
+          changed = true;
+        }
+      } else if (selectedTool === 'Erase Tool') {
+        if (newCell.mob !== null) {
+          newCell.mob = null;
+          changed = true;
+        }
+        if (newCell.color !== null) {
+          newCell.color = null;
+          changed = true;
+        }
       }
-    } else if (selectedTool === 'Erase Tool') {
-      let erasedSomething = false;
-      if (currentCell.mob !== null) {
-        currentCell.mob = null;
-        erasedSomething = true;
-      }
-      // Cannot erase bedrock
-      if (currentCell.color !== null && currentCell.color !== 'bedrock') {
-        currentCell.color = null;
-        erasedSomething = true;
-      }
-      changed = erasedSomething;
-    }
 
-    if (changed) {
-      setGrid(newGrid);
-    }
+      if (changed) {
+        const newGrid = currentGrid.map(r => [...r]);
+        newGrid[row][col] = newCell;
+        return newGrid;
+      }
+
+      return currentGrid;
+    });
   };
 
   const showBlockPalette = selectedTool === 'Block Tool' || selectedTool === 'Paint Tool';

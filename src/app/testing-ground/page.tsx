@@ -95,7 +95,7 @@ export default function TestingGroundPage() {
         changed = true;
       }
     } else if (tool === 'erase') {
-      if (cell.color !== 'bedrock' && cell.color !== null) {
+      if (cell.color !== null) {
         cell.color = null;
         changed = true;
       }
@@ -125,10 +125,11 @@ export default function TestingGroundPage() {
   }, []);
 
   const gameLoop = useCallback(() => {
+    // --- Player Physics ---
     setPlayer(p => {
         let { x, y, vx, vy, isOnGround } = { ...p };
 
-        // Horizontal movement
+        // Horizontal movement from input
         if (keys.current['a'] || keys.current['arrowleft']) {
             vx = -MOVE_SPEED;
         } else if (keys.current['d'] || keys.current['arrowright']) {
@@ -137,52 +138,58 @@ export default function TestingGroundPage() {
             vx = 0;
         }
         
-        // Jumping
+        // Jumping from input
         if ((keys.current['w'] || keys.current['arrowup'] || keys.current[' ']) && isOnGround) {
             vy = JUMP_FORCE;
-            isOnGround = false;
         }
 
         // Apply gravity
         vy += GRAVITY;
 
-        // --- Collision Detection ---
-        
-        // X-axis movement and collision
+        // --- Optimized X-axis collision ---
         x += vx;
-        const playerRectX = { left: x, right: x + TILE_SIZE, top: y, bottom: y + TILE_SIZE };
-        for (let row = 0; row < GRID_SIZE; row++) {
-            for (let col = 0; col < GRID_SIZE; col++) {
-                if (grid[row][col].color) {
-                    const blockRect = { left: col * TILE_SIZE, right: col * TILE_SIZE + TILE_SIZE, top: row * TILE_SIZE, bottom: row * TILE_SIZE + TILE_SIZE };
-                    if (playerRectX.right > blockRect.left && playerRectX.left < blockRect.right && playerRectX.bottom > blockRect.top && playerRectX.top < blockRect.bottom) {
-                        if (vx > 0) { x = blockRect.left - TILE_SIZE; } 
-                        else if (vx < 0) { x = blockRect.right; }
-                        vx = 0;
+        const playerStartX = Math.floor(x / TILE_SIZE);
+        const playerEndX = Math.floor((x + TILE_SIZE - 1) / TILE_SIZE);
+        const playerStartY = Math.floor(y / TILE_SIZE);
+        const playerEndY = Math.floor((y + TILE_SIZE - 1) / TILE_SIZE);
+
+        for (let row = playerStartY; row <= playerEndY; row++) {
+            for (let col = playerStartX; col <= playerEndX; col++) {
+                if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE && grid[row][col].color) {
+                    if (vx > 0) { // Moving right
+                        x = col * TILE_SIZE - TILE_SIZE;
+                    } else if (vx < 0) { // Moving left
+                        x = col * TILE_SIZE + TILE_SIZE;
                     }
+                    vx = 0;
+                    break;
                 }
             }
+            if (vx === 0) break;
         }
 
-        // Y-axis movement and collision
+        // --- Optimized Y-axis collision ---
         isOnGround = false;
         y += vy;
-        const playerRectY = { left: x, right: x + TILE_SIZE, top: y, bottom: y + TILE_SIZE };
-        for (let row = 0; row < GRID_SIZE; row++) {
-            for (let col = 0; col < GRID_SIZE; col++) {
-                if (grid[row][col].color) {
-                    const blockRect = { left: col * TILE_SIZE, right: col * TILE_SIZE + TILE_SIZE, top: row * TILE_SIZE, bottom: row * TILE_SIZE + TILE_SIZE };
-                    if (playerRectY.right > blockRect.left && playerRectY.left < blockRect.right && playerRectY.bottom > blockRect.top && playerRectY.top < blockRect.bottom) {
-                        if (vy > 0) { 
-                            y = blockRect.top - TILE_SIZE;
-                            isOnGround = true;
-                        } else if (vy < 0) {
-                             y = blockRect.bottom;
-                        }
-                        vy = 0;
+        const playerAfterMoveStartX = Math.floor(x / TILE_SIZE);
+        const playerAfterMoveEndX = Math.floor((x + TILE_SIZE - 1) / TILE_SIZE);
+        const playerAfterMoveStartY = Math.floor(y / TILE_SIZE);
+        const playerAfterMoveEndY = Math.floor((y + TILE_SIZE - 1) / TILE_SIZE);
+        
+        for (let row = playerAfterMoveStartY; row <= playerAfterMoveEndY; row++) {
+            for (let col = playerAfterMoveStartX; col <= playerAfterMoveEndX; col++) {
+                if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE && grid[row][col].color) {
+                    if (vy > 0) { // Moving down
+                        y = row * TILE_SIZE - TILE_SIZE;
+                        isOnGround = true;
+                    } else if (vy < 0) { // Moving up
+                        y = row * TILE_SIZE + TILE_SIZE;
                     }
+                    vy = 0;
+                    break;
                 }
             }
+            if (vy === 0) break;
         }
         
         // World bounds
@@ -195,36 +202,41 @@ export default function TestingGroundPage() {
         return { x, y, vx, vy, isOnGround };
     });
 
+    // --- Mobs Physics ---
     setMobs(prevMobs => 
         prevMobs.map(m => {
             let { x, y, vx, vy, isOnGround } = { ...m };
 
-            // Apply gravity
             vy += GRAVITY;
 
-            // Y-axis movement and collision for mob
+            // X-axis (mobs don't have horizontal movement yet)
+            // ...
+
+            // Y-axis
             isOnGround = false;
             y += vy;
-            const mobRectY = { left: x, right: x + TILE_SIZE, top: y, bottom: y + TILE_SIZE };
-            for (let row = 0; row < GRID_SIZE; row++) {
-                for (let col = 0; col < GRID_SIZE; col++) {
-                    if (grid[row][col].color) {
-                        const blockRect = { left: col * TILE_SIZE, right: col * TILE_SIZE + TILE_SIZE, top: row * TILE_SIZE, bottom: row * TILE_SIZE + TILE_SIZE };
-                        if (mobRectY.right > blockRect.left && mobRectY.left < blockRect.right && mobRectY.bottom > blockRect.top && mobRectY.top < blockRect.bottom) {
-                            if (vy > 0) { 
-                                y = blockRect.top - TILE_SIZE;
-                                isOnGround = true;
-                            } else if (vy < 0) {
-                                 y = blockRect.bottom;
-                            }
-                            vy = 0;
-                        }
-                    }
-                }
+            const mobStartY = Math.floor(y / TILE_SIZE);
+            const mobEndY = Math.floor((y + TILE_SIZE - 1) / TILE_SIZE);
+            const mobStartX = Math.floor(x / TILE_SIZE);
+            const mobEndX = Math.floor((x + TILE_SIZE - 1) / TILE_SIZE);
+
+            for (let row = mobStartY; row <= mobEndY; row++) {
+              for (let col = mobStartX; col <= mobEndX; col++) {
+                  if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE && grid[row][col].color) {
+                      if (vy > 0) {
+                          y = row * TILE_SIZE - TILE_SIZE;
+                          isOnGround = true;
+                      } else if (vy < 0) {
+                          y = row * TILE_SIZE + TILE_SIZE;
+                      }
+                      vy = 0;
+                      break;
+                  }
+              }
+              if (vy === 0) break;
             }
             
-            // World bounds
-            if (y > GRID_SIZE * TILE_SIZE) { // Fell out of world, mark for removal
+            if (y > GRID_SIZE * TILE_SIZE) {
                 return null;
             }
 
