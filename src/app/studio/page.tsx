@@ -143,19 +143,21 @@ export default function StudioPage() {
   };
 
   const showBlockPalette = selectedTool === 'Block Tool' || selectedTool === 'Paint Tool';
+  
   const cursorStyle = () => {
-    switch(selectedTool) {
-        case 'Block Tool':
-        case 'Paint Tool':
-            return 'copy';
-        case 'Erase Tool':
-            return 'crosshair';
-        case 'Move Tool':
-            return 'grab';
-        default:
-            return 'default';
+    if (selectedTool === 'Move Tool') {
+      return isMouseDown ? 'grabbing' : 'grab';
     }
-  }
+    switch (selectedTool) {
+      case 'Block Tool':
+      case 'Paint Tool':
+        return 'copy';
+      case 'Erase Tool':
+        return 'crosshair';
+      default:
+        return 'default';
+    }
+  };
 
   return (
     <TooltipProvider>
