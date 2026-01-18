@@ -1,3 +1,106 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "game-cover-1",
+      "description": "A vibrant, blocky landscape with a castle.",
+      "imageUrl": "https://images.unsplash.com/photo-1658763244896-d70c2d324d0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxibG9ja3klMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzY4NzE0MzMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blocky landscape"
+    },
+    {
+      "id": "game-cover-2",
+      "description": "A futuristic city made of blocks.",
+      "imageUrl": "https://images.unsplash.com/photo-1519608487953-e999c86e7455?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmdXR1cmlzdGljJTIwY2l0eXxlbnwwfHx8fDE3Njg2NDc2MzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "futuristic city"
+    },
+    {
+      "id": "game-cover-3",
+      "description": "A peaceful village in a blocky forest.",
+      "imageUrl": "https://images.unsplash.com/photo-1632231115662-3eed76916031?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxibG9ja3klMjBmb3Jlc3R8ZW58MHx8fHwxNzY4NzE0MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blocky forest"
+    },
+    {
+      "id": "game-cover-4",
+      "description": "An intense parkour course over lava.",
+      "imageUrl": "https://images.unsplash.com/photo-1754287425557-b45edb12cd0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxibG9ja3klMjBwYXJrb3VyfGVufDB8fHx8MTc2ODcxNDMzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blocky parkour"
+    },
+    {
+      "id": "game-cover-5",
+      "description": "A space station made of blocks.",
+      "imageUrl": "https://images.unsplash.com/photo-1604111976070-0e4c477a51eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzcGFjZSUyMHN0YXRpb258ZW58MHx8fHwxNzY4Njk0OTc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "space station"
+    },
+    {
+      "id": "game-cover-6",
+      "description": "An underwater city with glowing blocks.",
+      "imageUrl": "https://images.unsplash.com/photo-1662103788383-2f36f3255cf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx1bmRlcndhdGVyJTIwY2l0eXxlbnwwfHx8fDE3Njg3MDM5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "underwater city"
+    },
+    {
+      "id": "game-cover-7",
+      "description": "A desert temple with complex puzzles.",
+      "imageUrl": "https://images.unsplash.com/photo-1748292951608-e5c300778b1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkZXNlcnQlMjB0ZW1wbGV8ZW58MHx8fHwxNzY4NzEwNjg2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desert temple"
+    },
+    {
+      "id": "game-cover-8",
+      "description": "A racing game with blocky cars.",
+      "imageUrl": "https://images.unsplash.com/photo-1768029630578-c9e70bccac90?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxibG9ja3klMjBjYXJzfGVufDB8fHx8MTc2ODcxNDMzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blocky cars"
+    },
+    {
+      "id": "avatar-1",
+      "description": "A player avatar with a default skin.",
+      "imageUrl": "https://images.unsplash.com/photo-1645763341075-663e2237018d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGxheWVyJTIwYXZhdGFyfGVufDB8fHx8MTc2ODYxNzE2NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "player avatar"
+    },
+    {
+      "id": "skin-1",
+      "description": "A classic blocky character skin.",
+      "imageUrl": "https://images.unsplash.com/photo-1759663174699-d0e64ed0fb66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxibG9jayUyMGNoYXJhY3RlcnxlbnwwfHx8fDE3Njg3MTQzMzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "block character"
+    },
+    {
+      "id": "skin-2",
+      "description": "A robot skin for an avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1768400730810-5c4398d58ae7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxyb2JvdCUyMHNraW58ZW58MHx8fHwxNzY4NzE0MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robot skin"
+    },
+    {
+      "id": "skin-3",
+      "description": "An astronaut skin for an avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1756693551974-e1beeec2ce4c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhc3Ryb25hdXQlMjBza2lufGVufDB8fHx8MTc2ODcxNDMzMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "astronaut skin"
+    },
+    {
+      "id": "skin-4",
+      "description": "A ninja skin for an avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1668823367974-eba76c33fef5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxuaW5qYSUyMHNraW58ZW58MHx8fHwxNzY4NzE0MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ninja skin"
+    },
+    {
+      "id": "accessory-1",
+      "description": "A blocky top hat.",
+      "imageUrl": "https://images.unsplash.com/photo-1678705385245-ee7b75e35c80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx0b3AlMjBoYXR8ZW58MHx8fHwxNzY4NzE0MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "top hat"
+    },
+    {
+      "id": "accessory-2",
+      "description": "A pair of pixelated sunglasses.",
+      "imageUrl": "https://images.unsplash.com/photo-1719695290178-48f2a20338a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwaXhlbCUyMHN1bmdsYXNzZXN8ZW58MHx8fHwxNzY4NzE0MzMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pixel sunglasses"
+    },
+    {
+      "id": "accessory-3",
+      "description": "A blocky sword for the back.",
+      "imageUrl": "https://images.unsplash.com/photo-1668007470566-bd1e18d05fe6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxibG9ja3klMjBzd29yZHxlbnwwfHx8fDE3Njg3MTQzMzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "blocky sword"
+    },
+    {
+      "id": "accessory-4",
+      "description": "A pair of angel wings made of blocks.",
+      "imageUrl": "https://images.unsplash.com/photo-1614596559005-4237709526bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhbmdlbCUyMHdpbmdzfGVufDB8fHx8MTc2ODcxNDMzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "angel wings"
+    }
+  ]
 }
