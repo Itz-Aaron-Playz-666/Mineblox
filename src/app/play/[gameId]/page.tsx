@@ -1,3 +1,5 @@
+'use client';
+
 import { games } from '@/lib/placeholder-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { notFound } from 'next/navigation';
@@ -6,13 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Play, User, Star, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GameCard } from '@/components/game-card';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PlayGamePage({ params }: { params: { gameId: string } }) {
   const game = games.find(g => g.id === params.gameId);
+  const { toast } = useToast();
 
   if (!game) {
     notFound();
   }
+
+  const handlePlayClick = () => {
+    toast({
+      title: 'Starting game...',
+      description: `Now loading "${game.title}". Please wait.`,
+    });
+  };
 
   const coverImage = PlaceHolderImages.find(img => img.id === game.coverImageId);
   const otherGames = games.filter(g => g.id !== game.id).slice(0, 4);
@@ -32,7 +43,11 @@ export default function PlayGamePage({ params }: { params: { gameId: string } })
               />
             )}
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 scale-150">
+              <Button
+                size="lg"
+                className="bg-accent text-accent-foreground hover:bg-accent/90 scale-150"
+                onClick={handlePlayClick}
+              >
                 <Play className="mr-2 h-6 w-6" />
                 Play
               </Button>
