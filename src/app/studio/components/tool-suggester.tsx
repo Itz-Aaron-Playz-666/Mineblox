@@ -7,15 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { WandSparkles, Loader2, Info } from 'lucide-react';
+import { WandSparkles, Loader2, Info, X } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const initialState: SuggestionState = {
@@ -42,8 +35,7 @@ export function ToolSuggester() {
   const [state, formAction] = useActionState(suggestBuildingToolsAction, initialState);
   const [showResults, setShowResults] = useState(false);
   
-  const [isExplainDialogOpen, setExplainDialogOpen] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [explainingTool, setExplainingTool] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string>('');
   const [explanationError, setExplanationError] = useState<string | null>(null);
   const [isExplanationLoading, startExplanationTransition] = useTransition();
@@ -51,23 +43,29 @@ export function ToolSuggester() {
   useEffect(() => {
     if (state.timestamp) {
       setShowResults(true);
+      setExplainingTool(null);
+      setExplanation('');
+      setExplanationError(null);
     }
   }, [state.timestamp]);
 
   const handleExplainTool = (toolName: string) => {
+    if (explainingTool === toolName) {
+      setExplainingTool(null);
+      return;
+    }
+
     const form = document.querySelector('form');
     const designGoals = (form?.elements.namedItem('designGoals') as HTMLTextAreaElement)?.value || '';
 
-    if (!designGoals) {
-        setExplanationError("Please enter your design goals before asking for an explanation.");
-        setExplainDialogOpen(true);
-        return;
-    }
-    
-    setSelectedTool(toolName);
+    setExplainingTool(toolName);
     setExplanation('');
     setExplanationError(null);
-    setExplainDialogOpen(true);
+    
+    if (!designGoals) {
+      setExplanationError("Please enter your design goals before asking for an explanation.");
+      return;
+    }
 
     startExplanationTransition(async () => {
       const result = await explainToolUsageAction(toolName, designGoals);
@@ -132,9 +130,13 @@ export function ToolSuggester() {
               <h4 className="font-semibold mb-2">Suggested Tools:</h4>
               <div className="flex flex-wrap gap-2">
                 {state.suggestedTools?.map((tool) => (
-                  <Button key={tool} variant="secondary" onClick={() => handleExplainTool(tool)}>
+                  <Button 
+                    key={tool} 
+                    variant={explainingTool === tool ? 'default' : 'secondary'} 
+                    onClick={() => handleExplainTool(tool)}
+                  >
                     {tool}
-                    <Info className="ml-2 h-4 w-4"/>
+                    {explainingTool === tool ? <X className="ml-2 h-4 w-4"/> : <Info className="ml-2 h-4 w-4"/>}
                   </Button>
                 )) || <p className="text-sm text-muted-foreground">No tools suggested.</p>}
               </div>
@@ -145,37 +147,33 @@ export function ToolSuggester() {
                 {state.reasoning || "No reasoning provided."}
               </p>
             </div>
+            
+            {explainingTool && (
+                <div className="space-y-2 pt-2">
+                    <h4 className="font-semibold">
+                        {`About "${explainingTool}"`}
+                    </h4>
+                    <div className="text-sm bg-secondary/50 p-3 rounded-md min-h-[6rem]">
+                        {isExplanationLoading ? (
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-3/4" />
+                            </div>
+                        ) : explanationError ? (
+                            <Alert variant="destructive" className="bg-transparent border-0">
+                                <AlertTitle>Error</AlertTitle>
+                                <AlertDescription>{explanationError}</AlertDescription>
+                            </Alert>
+                        ) : (
+                            <p className="text-foreground">{explanation}</p>
+                        )}
+                    </div>
+                </div>
+            )}
           </div>
         </div>
       )}
-      <Dialog open={isExplainDialogOpen} onOpenChange={setExplainDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="font-headline">
-              About the "{selectedTool}" Tool
-            </DialogTitle>
-            <DialogDescription>
-              AI-powered explanation and tips.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="prose prose-sm max-w-none text-popover-foreground">
-            {isExplanationLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-            ) : explanationError ? (
-                <Alert variant="destructive">
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{explanationError}</AlertDescription>
-                </Alert>
-            ) : (
-                <p>{explanation}</p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
