@@ -26,6 +26,7 @@ import { BlockPalette, type BlockColor, blockStyles } from './components/block-p
 import { MobPalette, type MobType, mobIcons } from './components/mob-palette';
 import { useToast } from '@/hooks/use-toast';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { SoundGenerator } from './components/sound-generator';
 
 const GRID_SIZE = 40;
 const TILE_SIZE = 24;
@@ -131,8 +132,10 @@ export default function StudioPage() {
 
   const handleCellInteraction = (row: number, col: number) => {
     setGrid(currentGrid => {
-      const currentCell = currentGrid[row][col];
-      const newCell = { ...currentCell };
+      const newGrid = [...currentGrid];
+      newGrid[row] = [...currentGrid[row]];
+      const newCell = { ...newGrid[row][col] };
+      
       let changed = false;
 
       if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
@@ -150,15 +153,13 @@ export default function StudioPage() {
           newCell.mob = null;
           changed = true;
         }
-        if (newCell.color !== null) {
+        if (newCell.color !== null && newCell.color !== 'bedrock') {
           newCell.color = null;
           changed = true;
         }
       }
 
       if (changed) {
-        const newGrid = [...currentGrid];
-        newGrid[row] = [...currentGrid[row]];
         newGrid[row][col] = newCell;
         return newGrid;
       }
@@ -227,6 +228,9 @@ export default function StudioPage() {
         <MobPalette selectedMob={selectedMob} onSelectMob={setSelectedMob} />
       )}
       <ToolSuggester />
+      <div className="p-4 border-t">
+        <SoundGenerator />
+      </div>
     </>
   );
 

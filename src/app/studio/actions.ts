@@ -3,6 +3,7 @@
 import { suggestBuildingTools } from '@/ai/flows/suggest-building-tools';
 import { explainToolUsage } from '@/ai/flows/explain-tool-usage';
 import { z } from 'zod';
+import { generateAudio } from '@/ai/flows/generate-audio-flow';
 
 const SuggestFormSchema = z.object({
   designGoals: z.string().min(10, { message: 'Please describe your design goals in more detail.' }),
@@ -73,4 +74,17 @@ export async function explainToolUsageAction(
             error: 'An error occurred while getting the explanation.',
         };
     }
+}
+
+export async function generateAudioAction(text: string): Promise<{ audioDataUri?: string, error?: string }> {
+  if (!text) {
+    return { error: 'No text provided for audio generation.' };
+  }
+  try {
+    const result = await generateAudio(text);
+    return { audioDataUri: result.audioDataUri };
+  } catch (e) {
+    console.error(e);
+    return { error: 'Failed to generate audio. Please try again.' };
+  }
 }
