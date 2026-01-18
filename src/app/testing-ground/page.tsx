@@ -12,11 +12,11 @@ const TILE_SIZE = 30; // in pixels
 type Tool = 'draw' | 'erase';
 type BlockColor = 'stone' | 'dirt' | 'grass' | 'water';
 
-const blockColors: Record<BlockColor, string> = {
-  stone: 'bg-gray-400',
-  dirt: 'bg-yellow-700',
-  grass: 'bg-green-500',
-  water: 'bg-blue-500',
+const blockStyles: Record<BlockColor, string> = {
+  stone: 'bg-slate-400 border-slate-500',
+  dirt: 'bg-amber-800 border-amber-900',
+  grass: 'bg-lime-500 border-lime-600',
+  water: 'bg-sky-500 border-sky-600',
 };
 
 const blockTypes: BlockColor[] = ['stone', 'dirt', 'grass', 'water'];
@@ -33,8 +33,9 @@ export default function TestingGroundPage() {
   const [grid, setGrid] = useState<Cell[][]>(initialGrid);
   const [selectedBlock, setSelectedBlock] = useState<BlockColor>('stone');
   const [tool, setTool] = useState<Tool>('draw');
+  const [isMouseDown, setIsMouseDown] = useState(false);
 
-  const handleCellClick = (row: number, col: number) => {
+  const handleCellInteraction = (row: number, col: number) => {
     const newGrid = grid.map(r => r.slice());
     if (tool === 'draw') {
       newGrid[row][col].color = selectedBlock;
@@ -55,7 +56,7 @@ export default function TestingGroundPage() {
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Testing Ground</h1>
         <p className="text-muted-foreground">
-          A simple 2D block-based world. Select a block and click to build!
+          A simple 2D block-based world. Select a block, then click and drag to build!
         </p>
       </header>
 
@@ -96,8 +97,8 @@ export default function TestingGroundPage() {
                       key={b_type}
                       onClick={() => setSelectedBlock(b_type)}
                       className={cn(
-                        'w-10 h-10 rounded-md border-2',
-                        blockColors[b_type],
+                        'w-10 h-10 rounded-md border-2 border-r-4 border-b-4',
+                        blockStyles[b_type],
                         selectedBlock === b_type && tool === 'draw'
                           ? 'border-accent ring-2 ring-accent'
                           : 'border-transparent'
@@ -123,17 +124,29 @@ export default function TestingGroundPage() {
               width: `${GRID_SIZE * TILE_SIZE}px`,
               cursor: tool === 'draw' ? 'copy' : 'crosshair'
             }}
+            onMouseUp={() => setIsMouseDown(false)}
+            onMouseLeave={() => setIsMouseDown(false)}
           >
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => (
                 <div
                   key={`${rowIndex}-${colIndex}`}
                   className={cn(
-                    'border-l border-t border-muted',
-                    cell.color ? blockColors[cell.color] : 'bg-background hover:bg-secondary'
+                    'border-l border-t',
+                    cell.color
+                      ? `${blockStyles[cell.color]} border-r-4 border-b-4`
+                      : 'border-muted bg-background hover:bg-secondary'
                   )}
                   style={{ width: `${TILE_SIZE}px`, height: `${TILE_SIZE}px` }}
-                  onClick={() => handleCellClick(rowIndex, colIndex)}
+                  onMouseDown={() => {
+                    setIsMouseDown(true);
+                    handleCellInteraction(rowIndex, colIndex);
+                  }}
+                  onMouseEnter={() => {
+                    if (isMouseDown) {
+                      handleCellInteraction(rowIndex, colIndex);
+                    }
+                  }}
                 />
               ))
             )}
