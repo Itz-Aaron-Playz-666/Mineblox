@@ -85,13 +85,25 @@ export default function TestingGroundPage() {
       return;
     }
     
-    const newGrid = grid.map(r => r.slice());
+    const newGrid = grid.map(r => r.map(c => ({...c})));
+    let changed = false;
+    const cell = newGrid[row][col];
+
     if (tool === 'draw') {
-      newGrid[row][col].color = selectedBlock;
-    } else {
-      newGrid[row][col].color = null;
+      if (cell.color !== 'bedrock' && cell.color !== selectedBlock) {
+        cell.color = selectedBlock;
+        changed = true;
+      }
+    } else if (tool === 'erase') {
+      if (cell.color !== 'bedrock' && cell.color !== null) {
+        cell.color = null;
+        changed = true;
+      }
     }
-    setGrid(newGrid);
+
+    if (changed) {
+      setGrid(newGrid);
+    }
   };
   
   const resetWorld = () => {

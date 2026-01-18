@@ -13,7 +13,8 @@ export type BlockColor =
   | 'leaves'
   | 'brick'
   | 'glass'
-  | 'gold';
+  | 'gold'
+  | 'bedrock';
 
 export const blockStyles: Record<BlockColor, string> = {
   stone: 'bg-stone-500 border-t-stone-400 border-l-stone-400 border-b-stone-600 border-r-stone-600 shadow-inner',
@@ -26,6 +27,7 @@ export const blockStyles: Record<BlockColor, string> = {
   brick: 'bg-red-800 border-t-red-700 border-l-red-700 border-b-red-900 border-r-red-900 shadow-inner',
   glass: 'bg-sky-200/50 border-t-sky-100/50 border-l-sky-100/50 border-b-sky-300/50 border-r-sky-300/50 backdrop-blur-sm',
   gold: 'bg-yellow-500 border-t-yellow-400 border-l-yellow-400 border-b-yellow-600 border-r-yellow-600 shadow-inner',
+  bedrock: 'bg-gray-800 border-t-gray-700 border-l-gray-700 border-b-gray-900 border-r-gray-900 shadow-inner',
 };
 
 
@@ -40,6 +42,7 @@ export const blockTypes: BlockColor[] = [
   'brick',
   'glass',
   'gold',
+  'bedrock',
 ];
 
 interface BlockPaletteProps {

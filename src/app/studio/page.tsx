@@ -129,25 +129,27 @@ export default function StudioPage() {
   const handleCellInteraction = (row: number, col: number) => {
     const newGrid = grid.map(r => r.map(c => ({...c})));
     let changed = false;
+    const currentCell = newGrid[row][col];
 
     if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
-      if (newGrid[row][col].color !== selectedBlock) {
-        newGrid[row][col].color = selectedBlock;
+      if (currentCell.color !== 'bedrock' && currentCell.color !== selectedBlock) {
+        currentCell.color = selectedBlock;
         changed = true;
       }
     } else if (selectedTool === 'Mob Tool') {
-      if (newGrid[row][col].mob !== selectedMob) {
-          newGrid[row][col].mob = selectedMob;
+      if (currentCell.mob !== selectedMob) {
+          currentCell.mob = selectedMob;
           changed = true;
       }
     } else if (selectedTool === 'Erase Tool') {
       let erasedSomething = false;
-      if (newGrid[row][col].mob !== null) {
-        newGrid[row][col].mob = null;
+      if (currentCell.mob !== null) {
+        currentCell.mob = null;
         erasedSomething = true;
       }
-      if (newGrid[row][col].color !== null) {
-        newGrid[row][col].color = null;
+      // Cannot erase bedrock
+      if (currentCell.color !== null && currentCell.color !== 'bedrock') {
+        currentCell.color = null;
         erasedSomething = true;
       }
       changed = erasedSomething;
