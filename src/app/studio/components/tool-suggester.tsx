@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useState, useTransition } from 'react';
+import { useFormStatus } from 'react-dom';
 import { suggestBuildingToolsAction, explainToolUsageAction, SuggestionState } from '@/app/studio/actions';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,7 @@ function SubmitButton() {
 }
 
 export function ToolSuggester() {
-  const [state, formAction] = useFormState(suggestBuildingToolsAction, initialState);
+  const [state, formAction] = useActionState(suggestBuildingToolsAction, initialState);
   const [showResults, setShowResults] = useState(false);
   
   const [isExplainDialogOpen, setExplainDialogOpen] = useState(false);
