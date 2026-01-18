@@ -3,16 +3,43 @@
 import { cn } from '@/lib/utils';
 import { Gem } from 'lucide-react';
 
-export type BlockColor = 'stone' | 'dirt' | 'grass' | 'water';
+export type BlockColor =
+  | 'stone'
+  | 'dirt'
+  | 'grass'
+  | 'water'
+  | 'sand'
+  | 'wood'
+  | 'leaves'
+  | 'brick'
+  | 'glass'
+  | 'gold';
 
 export const blockStyles: Record<BlockColor, string> = {
   stone: 'bg-slate-400 border-slate-500',
   dirt: 'bg-amber-800 border-amber-900',
   grass: 'bg-lime-500 border-lime-600',
   water: 'bg-sky-500 border-sky-600',
+  sand: 'bg-yellow-300 border-yellow-400',
+  wood: 'bg-amber-600 border-amber-700',
+  leaves: 'bg-green-600 border-green-700',
+  brick: 'bg-red-700 border-red-800',
+  glass: 'bg-sky-200/50 border-sky-300/50',
+  gold: 'bg-yellow-500 border-yellow-600',
 };
 
-export const blockTypes: BlockColor[] = ['stone', 'dirt', 'grass', 'water'];
+export const blockTypes: BlockColor[] = [
+  'stone',
+  'dirt',
+  'grass',
+  'water',
+  'sand',
+  'wood',
+  'leaves',
+  'brick',
+  'glass',
+  'gold',
+];
 
 interface BlockPaletteProps {
   selectedBlock: BlockColor;

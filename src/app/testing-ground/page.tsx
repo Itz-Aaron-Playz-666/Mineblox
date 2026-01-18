@@ -10,16 +10,43 @@ const GRID_SIZE = 20;
 const TILE_SIZE = 30; // in pixels
 
 type Tool = 'draw' | 'erase';
-type BlockColor = 'stone' | 'dirt' | 'grass' | 'water';
+type BlockColor =
+  | 'stone'
+  | 'dirt'
+  | 'grass'
+  | 'water'
+  | 'sand'
+  | 'wood'
+  | 'leaves'
+  | 'brick'
+  | 'glass'
+  | 'gold';
 
 const blockStyles: Record<BlockColor, string> = {
   stone: 'bg-slate-400 border-slate-500',
   dirt: 'bg-amber-800 border-amber-900',
   grass: 'bg-lime-500 border-lime-600',
   water: 'bg-sky-500 border-sky-600',
+  sand: 'bg-yellow-300 border-yellow-400',
+  wood: 'bg-amber-600 border-amber-700',
+  leaves: 'bg-green-600 border-green-700',
+  brick: 'bg-red-700 border-red-800',
+  glass: 'bg-sky-200/50 border-sky-300/50',
+  gold: 'bg-yellow-500 border-yellow-600',
 };
 
-const blockTypes: BlockColor[] = ['stone', 'dirt', 'grass', 'water'];
+const blockTypes: BlockColor[] = [
+  'stone',
+  'dirt',
+  'grass',
+  'water',
+  'sand',
+  'wood',
+  'leaves',
+  'brick',
+  'glass',
+  'gold',
+];
 
 type Cell = {
   color: BlockColor | null;
@@ -91,7 +118,7 @@ export default function TestingGroundPage() {
               </div>
               <div className="space-y-2">
                 <h3 className="font-semibold">Blocks</h3>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-5 gap-2">
                   {blockTypes.map(b_type => (
                     <button
                       key={b_type}
