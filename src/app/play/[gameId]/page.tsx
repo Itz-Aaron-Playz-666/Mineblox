@@ -5,7 +5,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Play, User, Star, Users, X } from 'lucide-react';
+import { Play, User, Star, Users, X, Heart, Sword, Pickaxe, Box } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GameCard } from '@/components/game-card';
 import { useToast } from '@/hooks/use-toast';
@@ -71,18 +71,40 @@ export default function PlayGamePage() {
                 </div>
               </>
             ) : (
-              <div className="absolute inset-0 bg-grid flex flex-col items-center justify-center p-4 text-center">
-                <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
-                  <h2 className="text-3xl font-bold mb-4 font-headline text-foreground">
-                    Playing: {game.title}
-                  </h2>
-                  <p className="text-lg mb-8 text-muted-foreground">
-                    This is a simulation of the game running.
-                  </p>
-                  <Button variant="secondary" onClick={handleStopPlaying}>
+              <div className="absolute inset-0 bg-grid flex flex-col justify-between p-4">
+                <div className="flex justify-between items-start">
+                  <div className="bg-background/80 backdrop-blur-sm p-2 rounded-lg shadow-lg text-left">
+                    <h2 className="font-bold text-foreground">Playing: {game.title}</h2>
+                    <p className="text-sm text-muted-foreground">This is a simulated game environment.</p>
+                  </div>
+                  <Button variant="secondary" onClick={handleStopPlaying} className="bg-background/80 backdrop-blur-sm">
                     <X className="mr-2 h-5 w-5" />
                     Exit Game
                   </Button>
+                </div>
+        
+                <div className="flex justify-center">
+                    <div className="flex items-center gap-4 bg-background/80 backdrop-blur-sm p-2 rounded-lg shadow-lg border">
+                        <div className="flex items-center gap-2 pr-4 border-r">
+                            <Heart className="h-6 w-6 text-destructive fill-destructive" />
+                            <div className="w-24 bg-secondary rounded-full h-4 overflow-hidden border">
+                                <div className="bg-destructive h-full" style={{ width: '80%' }}></div>
+                            </div>
+                        </div>
+                        <div className="flex gap-1">
+                            <div className="w-12 h-12 bg-secondary/50 border-2 border-accent ring-2 ring-accent rounded-md flex items-center justify-center cursor-pointer">
+                                <Sword className="h-7 w-7 text-foreground" />
+                            </div>
+                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer">
+                                <Pickaxe className="h-7 w-7 text-foreground" />
+                            </div>
+                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer">
+                                <Box className="h-7 w-7 text-foreground" />
+                            </div>
+                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer" />
+                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer" />
+                        </div>
+                    </div>
                 </div>
               </div>
             )}
