@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Box,
   Brush,
@@ -15,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ToolSuggester } from './components/tool-suggester';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const toolboxTools = [
   { icon: Box, label: 'Block Tool' },
@@ -36,11 +40,30 @@ const fileTools = [
     { icon: Share2, label: 'Publish' },
 ];
 
-function ToolButton({ icon: Icon, label }: { icon: React.ElementType, label: string }) {
+function ToolButton({ 
+  icon: Icon, 
+  label,
+  isSelected,
+  onClick
+}: { 
+  icon: React.ElementType, 
+  label: string,
+  isSelected?: boolean,
+  onClick?: () => void
+}) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button variant="ghost" size="icon" className="w-14 h-14 flex flex-col gap-1 text-muted-foreground hover:text-primary-foreground hover:bg-primary/10">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className={cn(
+            "w-14 h-14 flex flex-col gap-1 text-muted-foreground hover:text-primary-foreground hover:bg-primary/10",
+            isSelected && "bg-primary/20 text-primary-foreground ring-2 ring-primary"
+          )}
+          onClick={onClick}
+          aria-pressed={isSelected}
+        >
           <Icon className="w-6 h-6" />
           <span className="text-xs">{label}</span>
         </Button>
@@ -53,17 +76,37 @@ function ToolButton({ icon: Icon, label }: { icon: React.ElementType, label: str
 }
 
 export default function StudioPage() {
+  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+
+  const handleToolSelect = (label: string) => {
+    setSelectedTool(currentTool => currentTool === label ? null : label);
+  };
+
   return (
     <TooltipProvider>
       <div className="flex h-[calc(100vh-4rem)] bg-secondary/50">
         {/* Left Toolbox */}
         <aside className="w-20 bg-background flex flex-col items-center py-4 border-r">
           <nav className="flex flex-col items-center gap-2">
-            {toolboxTools.map(tool => <ToolButton key={tool.label} {...tool} />)}
+            {toolboxTools.map(tool => (
+              <ToolButton 
+                key={tool.label} 
+                {...tool} 
+                isSelected={selectedTool === tool.label}
+                onClick={() => handleToolSelect(tool.label)}
+              />
+            ))}
           </nav>
           <Separator className="my-4" />
           <nav className="flex flex-col items-center gap-2">
-            {worldTools.map(tool => <ToolButton key={tool.label} {...tool} />)}
+            {worldTools.map(tool => (
+              <ToolButton 
+                key={tool.label} 
+                {...tool} 
+                isSelected={selectedTool === tool.label}
+                onClick={() => handleToolSelect(tool.label)}
+              />
+            ))}
           </nav>
           <div className="flex-grow" />
           <nav className="flex flex-col items-center gap-2">
@@ -74,8 +117,17 @@ export default function StudioPage() {
         {/* Main Canvas */}
         <main className="flex-1 flex items-center justify-center bg-grid">
           <div className="text-center p-8 rounded-lg bg-background/80 backdrop-blur-sm shadow-lg">
-            <h1 className="font-headline text-3xl font-bold">Your World Awaits</h1>
-            <p className="text-muted-foreground">Use the tools to start building your game.</p>
+            {selectedTool ? (
+              <>
+                <h1 className="font-headline text-3xl font-bold">{selectedTool}</h1>
+                <p className="text-muted-foreground">is now active. Start building!</p>
+              </>
+            ) : (
+              <>
+                <h1 className="font-headline text-3xl font-bold">Your World Awaits</h1>
+                <p className="text-muted-foreground">Select a tool to start building your game.</p>
+              </>
+            )}
           </div>
         </main>
 
