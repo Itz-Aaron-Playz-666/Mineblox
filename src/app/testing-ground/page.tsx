@@ -23,16 +23,16 @@ type BlockColor =
   | 'gold';
 
 const blockStyles: Record<BlockColor, string> = {
-  stone: 'bg-slate-400 border-slate-500',
-  dirt: 'bg-amber-800 border-amber-900',
-  grass: 'bg-lime-500 border-lime-600',
-  water: 'bg-sky-500 border-sky-600',
-  sand: 'bg-yellow-300 border-yellow-400',
-  wood: 'bg-amber-600 border-amber-700',
-  leaves: 'bg-green-600 border-green-700',
-  brick: 'bg-red-700 border-red-800',
-  glass: 'bg-sky-200/50 border-sky-300/50',
-  gold: 'bg-yellow-500 border-yellow-600',
+  stone: 'bg-slate-400 border-t-slate-300 border-l-slate-300 border-b-slate-500 border-r-slate-500',
+  dirt: 'bg-amber-800 border-t-amber-700 border-l-amber-700 border-b-amber-900 border-r-amber-900',
+  grass: 'bg-lime-500 border-t-lime-400 border-l-lime-400 border-b-lime-600 border-r-lime-600',
+  water: 'bg-sky-500 border-t-sky-400 border-l-sky-400 border-b-sky-600 border-r-sky-600',
+  sand: 'bg-yellow-300 border-t-yellow-200 border-l-yellow-200 border-b-yellow-400 border-r-yellow-400',
+  wood: 'bg-amber-600 border-t-amber-500 border-l-amber-500 border-b-amber-700 border-r-amber-700',
+  leaves: 'bg-green-600 border-t-green-500 border-l-green-500 border-b-green-700 border-r-green-700',
+  brick: 'bg-red-700 border-t-red-600 border-l-red-600 border-b-red-800 border-r-red-800',
+  glass: 'bg-sky-200/50 border-t-sky-100/50 border-l-sky-100/50 border-b-sky-300/50 border-r-sky-300/50',
+  gold: 'bg-yellow-500 border-t-yellow-400 border-l-yellow-400 border-b-yellow-600 border-r-yellow-600',
 };
 
 const blockTypes: BlockColor[] = [
@@ -127,8 +127,8 @@ export default function TestingGroundPage() {
                           'w-10 h-10 rounded-md border-2 border-r-4 border-b-4 transition-all',
                           blockStyles[b_type],
                           selectedBlock === b_type && tool === 'draw'
-                            ? 'border-accent ring-2 ring-accent'
-                            : 'border-input hover:border-accent'
+                            ? 'ring-2 ring-offset-background ring-accent'
+                            : 'hover:ring-1 hover:ring-accent'
                         )}
                         aria-label={`Select ${b_type} block`}
                       />
