@@ -13,6 +13,8 @@ import {
   Play,
   Share2,
   Rabbit,
+  PanelLeft,
+  PanelRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -23,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { BlockPalette, type BlockColor, blockStyles } from './components/block-palette';
 import { MobPalette, type MobType, mobIcons } from './components/mob-palette';
 import { useToast } from '@/hooks/use-toast';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const GRID_SIZE = 40;
 const TILE_SIZE = 24;
@@ -179,37 +182,86 @@ export default function StudioPage() {
     }
   };
 
+  const leftSidebarContent = (
+    <div className="flex flex-col items-center py-4 h-full">
+      <nav className="flex flex-col items-center gap-2">
+        {toolboxTools.map(tool => (
+          <ToolButton
+            key={tool.label}
+            {...tool}
+            isSelected={selectedTool === tool.label}
+            onClick={() => handleToolSelect(tool.label)}
+          />
+        ))}
+      </nav>
+      <Separator className="my-4" />
+      <nav className="flex flex-col items-center gap-2">
+        {worldTools.map(tool => (
+          <ToolButton
+            key={tool.label}
+            {...tool}
+            isSelected={selectedTool === tool.label}
+            onClick={() => handleToolSelect(tool.label)}
+          />
+        ))}
+      </nav>
+      <div className="flex-grow" />
+      <nav className="flex flex-col items-center gap-2">
+        {fileTools.map(tool => (
+          <ToolButton key={tool.label} {...tool} onClick={() => handleToolSelect(tool.label)} />
+        ))}
+      </nav>
+    </div>
+  );
+
+  const rightSidebarContent = (
+    <>
+      {showBlockPalette && (
+        <BlockPalette selectedBlock={selectedBlock} onSelectBlock={setSelectedBlock} />
+      )}
+      {showMobPalette && (
+        <MobPalette selectedMob={selectedMob} onSelectMob={setSelectedMob} />
+      )}
+      <ToolSuggester />
+    </>
+  );
+
   return (
     <TooltipProvider>
-      <div className="flex h-[calc(100vh-4rem)] bg-secondary/50">
-        <aside className="w-20 bg-background flex flex-col items-center py-4 border-r z-10">
-          <nav className="flex flex-col items-center gap-2">
-            {toolboxTools.map(tool => (
-              <ToolButton
-                key={tool.label}
-                {...tool}
-                isSelected={selectedTool === tool.label}
-                onClick={() => handleToolSelect(tool.label)}
-              />
-            ))}
-          </nav>
-          <Separator className="my-4" />
-          <nav className="flex flex-col items-center gap-2">
-            {worldTools.map(tool => (
-              <ToolButton
-                key={tool.label}
-                {...tool}
-                isSelected={selectedTool === tool.label}
-                onClick={() => handleToolSelect(tool.label)}
-              />
-            ))}
-          </nav>
-          <div className="flex-grow" />
-          <nav className="flex flex-col items-center gap-2">
-            {fileTools.map(tool => (
-              <ToolButton key={tool.label} {...tool} onClick={() => handleToolSelect(tool.label)} />
-            ))}
-          </nav>
+      <div className="relative flex h-[calc(100vh-4rem)] bg-secondary/50">
+        
+        {/* Mobile Sidebar Triggers */}
+        <div className="absolute top-4 left-4 z-20 md:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="secondary" size="icon" className="shadow-lg">
+                <PanelLeft className="h-5 w-5" />
+                <span className="sr-only">Toggle Left Panel</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[80px] p-0">
+              {leftSidebarContent}
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        <div className="absolute top-4 right-4 z-20 lg:hidden">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="secondary" size="icon" className="shadow-lg">
+                <PanelRight className="h-5 w-5" />
+                <span className="sr-only">Toggle Right Panel</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[320px] sm:w-[400px] p-0 overflow-y-auto">
+              {rightSidebarContent}
+            </SheetContent>
+          </Sheet>
+        </div>
+        
+        {/* Desktop Sidebars */}
+        <aside className="w-20 bg-background hidden md:flex flex-col border-r z-10">
+          {leftSidebarContent}
         </aside>
 
         <main className="flex-1 flex items-center justify-center bg-grid overflow-auto p-4">
@@ -257,14 +309,8 @@ export default function StudioPage() {
           </div>
         </main>
 
-        <aside className="w-96 bg-background border-l overflow-y-auto">
-          {showBlockPalette && (
-            <BlockPalette selectedBlock={selectedBlock} onSelectBlock={setSelectedBlock} />
-          )}
-          {showMobPalette && (
-            <MobPalette selectedMob={selectedMob} onSelectMob={setSelectedMob} />
-          )}
-          <ToolSuggester />
+        <aside className="w-96 bg-background border-l overflow-y-auto hidden lg:block">
+          {rightSidebarContent}
         </aside>
       </div>
     </TooltipProvider>
