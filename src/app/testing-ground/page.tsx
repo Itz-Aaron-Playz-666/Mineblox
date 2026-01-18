@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Eraser, Square, User } from 'lucide-react';
+import { Eraser, Square, User, Rabbit, Ghost, PiggyBank, type LucideIcon } from 'lucide-react';
 import { type BlockColor, blockStyles, blockTypes } from '@/app/studio/components/block-palette';
 
 const GRID_SIZE = 20;
@@ -13,7 +13,28 @@ const GRAVITY = 0.4;
 const MOVE_SPEED = 3;
 const JUMP_FORCE = -8;
 
-type Tool = 'draw' | 'erase';
+// Mob types and data
+export type MobType = 'pig' | 'zombie' | 'creeper';
+
+export const mobIcons: Record<MobType, LucideIcon> = {
+  pig: PiggyBank,
+  zombie: User,
+  creeper: Ghost,
+};
+
+export const mobNames: Record<MobType, string> = {
+    pig: "Pig",
+    zombie: "Zombie",
+    creeper: "Creeper"
+}
+
+export const mobTypes: MobType[] = [
+  'pig',
+  'zombie',
+  'creeper',
+];
+
+type Tool = 'draw' | 'erase' | 'mob';
 
 type Cell = {
   color: BlockColor | null;
@@ -27,6 +48,11 @@ type PlayerState = {
   isOnGround: boolean;
 };
 
+type MobState = {
+  id: number;
+  type: MobType;
+} & PlayerState;
+
 const initialGrid = Array.from({ length: GRID_SIZE }, () =>
   Array.from({ length: GRID_SIZE }, () => ({ color: null }))
 );
@@ -34,14 +60,31 @@ const initialGrid = Array.from({ length: GRID_SIZE }, () =>
 export default function TestingGroundPage() {
   const [grid, setGrid] = useState<Cell[][]>(initialGrid);
   const [selectedBlock, setSelectedBlock] = useState<BlockColor>('stone');
+  const [selectedMob, setSelectedMob] = useState<MobType>('pig');
   const [tool, setTool] = useState<Tool>('draw');
   const [isMouseDown, setIsMouseDown] = useState(false);
   
   const [player, setPlayer] = useState<PlayerState>({ x: TILE_SIZE * 3, y: 0, vx: 0, vy: 0, isOnGround: false });
+  const [mobs, setMobs] = useState<MobState[]>([]);
   const keys = useRef<{ [key: string]: boolean }>({});
   const gameLoopId = useRef<number>();
+  const nextMobId = useRef(0);
 
   const handleCellInteraction = (row: number, col: number) => {
+    if (tool === 'mob') {
+      const newMob: MobState = {
+        id: nextMobId.current++,
+        type: selectedMob,
+        x: col * TILE_SIZE,
+        y: row * TILE_SIZE,
+        vx: 0,
+        vy: 0,
+        isOnGround: false,
+      };
+      setMobs(prev => [...prev, newMob]);
+      return;
+    }
+    
     const newGrid = grid.map(r => r.slice());
     if (tool === 'draw') {
       newGrid[row][col].color = selectedBlock;
@@ -51,9 +94,10 @@ export default function TestingGroundPage() {
     setGrid(newGrid);
   };
   
-  const resetGrid = () => {
+  const resetWorld = () => {
     setGrid(initialGrid);
     setPlayer({ x: TILE_SIZE * 3, y: 0, vx: 0, vy: 0, isOnGround: false });
+    setMobs([]);
   }
 
   // Keyboard input handlers
@@ -139,6 +183,43 @@ export default function TestingGroundPage() {
         return { x, y, vx, vy, isOnGround };
     });
 
+    setMobs(prevMobs => 
+        prevMobs.map(m => {
+            let { x, y, vx, vy, isOnGround } = { ...m };
+
+            // Apply gravity
+            vy += GRAVITY;
+
+            // Y-axis movement and collision for mob
+            isOnGround = false;
+            y += vy;
+            const mobRectY = { left: x, right: x + TILE_SIZE, top: y, bottom: y + TILE_SIZE };
+            for (let row = 0; row < GRID_SIZE; row++) {
+                for (let col = 0; col < GRID_SIZE; col++) {
+                    if (grid[row][col].color) {
+                        const blockRect = { left: col * TILE_SIZE, right: col * TILE_SIZE + TILE_SIZE, top: row * TILE_SIZE, bottom: row * TILE_SIZE + TILE_SIZE };
+                        if (mobRectY.right > blockRect.left && mobRectY.left < blockRect.right && mobRectY.bottom > blockRect.top && mobRectY.top < blockRect.bottom) {
+                            if (vy > 0) { 
+                                y = blockRect.top - TILE_SIZE;
+                                isOnGround = true;
+                            } else if (vy < 0) {
+                                 y = blockRect.bottom;
+                            }
+                            vy = 0;
+                        }
+                    }
+                }
+            }
+            
+            // World bounds
+            if (y > GRID_SIZE * TILE_SIZE) { // Fell out of world, mark for removal
+                return null;
+            }
+
+            return { ...m, x, y, vx, vy, isOnGround };
+        }).filter(Boolean) as MobState[]
+    );
+
     gameLoopId.current = requestAnimationFrame(gameLoop);
   }, [grid]);
 
@@ -156,7 +237,7 @@ export default function TestingGroundPage() {
       <header className="mb-8">
         <h1 className="font-headline text-4xl font-bold">Physics Testing Ground</h1>
         <p className="text-muted-foreground">
-          Build a level and test the physics! Use A/D or Arrow Keys to move, and W, Space, or Up Arrow to jump.
+          Build a level, place some mobs, and test the physics! Use A/D or Arrow Keys to move, and W, Space, or Up Arrow to jump.
         </p>
       </header>
 
@@ -186,30 +267,70 @@ export default function TestingGroundPage() {
                     >
                         <Eraser />
                     </Button>
+                    <Button 
+                        variant={tool === 'mob' ? 'secondary' : 'outline'} 
+                        size="icon" 
+                        onClick={() => setTool('mob')}
+                        aria-label="Mob tool"
+                    >
+                        <Rabbit />
+                    </Button>
                  </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="font-semibold">Blocks</h3>
-                <div className="grid grid-cols-5 gap-x-2 gap-y-3">
-                  {blockTypes.map(b_type => (
-                    <div key={b_type} className="flex flex-col items-center gap-1.5">
-                      <button
-                        onClick={() => setSelectedBlock(b_type)}
-                        className={cn(
-                          'w-10 h-10 rounded-md border-2 border-r-[3px] border-b-[3px] transition-all',
-                          blockStyles[b_type],
-                          selectedBlock === b_type && tool === 'draw'
-                            ? 'ring-2 ring-offset-background ring-accent'
-                            : 'hover:ring-1 hover:ring-accent'
-                        )}
-                        aria-label={`Select ${b_type} block`}
-                      />
-                      <p className="text-xs capitalize text-muted-foreground">{b_type}</p>
-                    </div>
-                  ))}
+              
+              {tool === 'draw' && (
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Blocks</h3>
+                  <div className="grid grid-cols-5 gap-x-2 gap-y-3">
+                    {blockTypes.map(b_type => (
+                      <div key={b_type} className="flex flex-col items-center gap-1.5">
+                        <button
+                          onClick={() => setSelectedBlock(b_type)}
+                          className={cn(
+                            'w-10 h-10 rounded-md border-2 border-r-[3px] border-b-[3px] transition-all',
+                            blockStyles[b_type],
+                            selectedBlock === b_type && tool === 'draw'
+                              ? 'ring-2 ring-offset-background ring-accent'
+                              : 'hover:ring-1 hover:ring-accent'
+                          )}
+                          aria-label={`Select ${b_type} block`}
+                        />
+                        <p className="text-xs capitalize text-muted-foreground">{b_type}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-               <Button onClick={resetGrid} variant="destructive" className="w-full">
+              )}
+
+              {tool === 'mob' && (
+                <div className="space-y-2">
+                    <h3 className="font-semibold">Mobs</h3>
+                    <div className="grid grid-cols-3 gap-x-2 gap-y-4">
+                        {mobTypes.map(mobType => {
+                            const Icon = mobIcons[mobType];
+                            return (
+                                <div key={mobType} className="flex flex-col items-center gap-1.5">
+                                    <button
+                                        onClick={() => setSelectedMob(mobType)}
+                                        className={cn(
+                                        'w-12 h-12 rounded-md border-2 flex items-center justify-center bg-secondary transition-all',
+                                        selectedMob === mobType
+                                            ? 'ring-2 ring-offset-background ring-accent border-accent'
+                                            : 'hover:ring-1 hover:ring-accent border-input'
+                                        )}
+                                        aria-label={`Select ${mobType}`}
+                                    >
+                                        <Icon className="w-8 h-8 text-secondary-foreground" />
+                                    </button>
+                                    <p className="text-xs capitalize text-muted-foreground">{mobNames[mobType]}</p>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+              )}
+
+               <Button onClick={resetWorld} variant="destructive" className="w-full">
                 Reset World
               </Button>
             </CardContent>
@@ -222,7 +343,7 @@ export default function TestingGroundPage() {
             style={{
               gridTemplateColumns: `repeat(${GRID_SIZE}, ${TILE_SIZE}px)`,
               width: `${GRID_SIZE * TILE_SIZE}px`,
-              cursor: tool === 'draw' ? 'copy' : 'crosshair'
+              cursor: tool === 'erase' ? 'crosshair' : 'copy'
             }}
             onMouseUp={() => setIsMouseDown(false)}
             onMouseLeave={() => setIsMouseDown(false)}
@@ -257,10 +378,29 @@ export default function TestingGroundPage() {
                   top: player.y,
                   width: TILE_SIZE,
                   height: TILE_SIZE,
+                  transition: 'left 0.05s linear, top 0.05s linear'
               }}
             >
               <User className="w-5 h-5 text-accent-foreground" />
             </div>
+            {mobs.map(mob => {
+                const MobIcon = mobIcons[mob.type];
+                return (
+                    <div
+                        key={mob.id}
+                        className="absolute bg-rose-500 rounded-sm border-2 border-rose-700 flex items-center justify-center"
+                        style={{
+                            left: mob.x,
+                            top: mob.y,
+                            width: TILE_SIZE,
+                            height: TILE_SIZE,
+                            transition: 'left 0.05s linear, top 0.05s linear'
+                        }}
+                    >
+                        <MobIcon className="w-5 h-5 text-white" />
+                    </div>
+                );
+            })}
           </div>
         </main>
       </div>
