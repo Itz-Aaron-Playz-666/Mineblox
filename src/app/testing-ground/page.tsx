@@ -85,25 +85,32 @@ export default function TestingGroundPage() {
       return;
     }
     
-    const newGrid = grid.map(r => r.map(c => ({...c})));
-    let changed = false;
-    const cell = newGrid[row][col];
+    setGrid(currentGrid => {
+      const currentCell = currentGrid[row][col];
+      const newCell = {...currentCell};
+      let changed = false;
 
-    if (tool === 'draw') {
-      if (cell.color !== 'bedrock' && cell.color !== selectedBlock) {
-        cell.color = selectedBlock;
-        changed = true;
+      if (tool === 'draw') {
+        if (newCell.color !== selectedBlock) {
+          newCell.color = selectedBlock;
+          changed = true;
+        }
+      } else if (tool === 'erase') {
+        if (newCell.color !== null) {
+          newCell.color = null;
+          changed = true;
+        }
       }
-    } else if (tool === 'erase') {
-      if (cell.color !== null) {
-        cell.color = null;
-        changed = true;
-      }
-    }
 
-    if (changed) {
-      setGrid(newGrid);
-    }
+      if (changed) {
+        const newGrid = [...currentGrid];
+        newGrid[row] = [...currentGrid[row]];
+        newGrid[row][col] = newCell;
+        return newGrid;
+      }
+
+      return currentGrid;
+    });
   };
   
   const resetWorld = () => {

@@ -132,17 +132,16 @@ export default function StudioPage() {
   const handleCellInteraction = (row: number, col: number) => {
     setGrid(currentGrid => {
       const currentCell = currentGrid[row][col];
-      
       const newCell = { ...currentCell };
       let changed = false;
 
       if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
-        if (currentCell.color !== 'bedrock' && currentCell.color !== selectedBlock) {
+        if (newCell.color !== selectedBlock) {
           newCell.color = selectedBlock;
           changed = true;
         }
       } else if (selectedTool === 'Mob Tool') {
-        if (currentCell.mob !== selectedMob) {
+        if (newCell.mob !== selectedMob) {
           newCell.mob = selectedMob;
           changed = true;
         }
@@ -158,11 +157,12 @@ export default function StudioPage() {
       }
 
       if (changed) {
-        const newGrid = currentGrid.map(r => [...r]);
+        const newGrid = [...currentGrid];
+        newGrid[row] = [...currentGrid[row]];
         newGrid[row][col] = newCell;
         return newGrid;
       }
-
+      
       return currentGrid;
     });
   };
