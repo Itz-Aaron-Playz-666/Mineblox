@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Eraser, Square, User, Rabbit, Ghost, PiggyBank, type LucideIcon, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
+import { Eraser, Square, User, Rabbit, Ghost, PiggyBank, type LucideIcon, ArrowUp } from 'lucide-react';
 import { type BlockColor, blockStyles, blockTypes } from '@/app/studio/components/block-palette';
 
 const GRID_SIZE = 20;
@@ -56,6 +56,74 @@ type MobState = {
 const initialGrid = Array.from({ length: GRID_SIZE }, () =>
   Array.from({ length: GRID_SIZE }, () => ({ color: null }))
 );
+
+const Joystick = ({ onMove, onEnd }: { onMove: (x: number) => void; onEnd: () => void; }) => {
+    const [isDragging, setIsDragging] = useState(false);
+    const stickRef = useRef<HTMLDivElement>(null);
+    const baseRef = useRef<HTMLDivElement>(null);
+
+    const handleMove = useCallback((clientX: number) => {
+        if (!baseRef.current || !stickRef.current) return;
+
+        const baseRect = baseRef.current.getBoundingClientRect();
+        const centerX = baseRect.left + baseRect.width / 2;
+        const maxDist = baseRect.width / 2 - stickRef.current.offsetWidth / 2;
+
+        let dx = clientX - centerX;
+
+        if (Math.abs(dx) > maxDist) {
+            dx = Math.sign(dx) * maxDist;
+        }
+
+        stickRef.current.style.transform = `translateX(${dx}px)`;
+        
+        const x = dx / maxDist;
+        onMove(x);
+    }, [onMove]);
+
+    const handleEnd = useCallback(() => {
+        setIsDragging(false);
+        if (stickRef.current) {
+            stickRef.current.style.transform = 'translateX(0px)';
+        }
+        onEnd();
+    }, [onEnd]);
+
+    const handleStart = () => {
+        setIsDragging(true);
+    };
+
+    const handleMouseMove = useCallback((e: MouseEvent) => handleMove(e.clientX), [handleMove]);
+    const handleTouchMove = useCallback((e: TouchEvent) => handleMove(e.touches[0].clientX), [handleMove]);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleEnd);
+            window.addEventListener('touchmove', handleTouchMove);
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleEnd);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleEnd);
+        };
+    }, [isDragging, handleMouseMove, handleTouchMove, handleEnd]);
+
+    return (
+        <div ref={baseRef} className="w-40 h-20 rounded-full bg-secondary/50 flex items-center justify-center relative p-2">
+            <div
+                ref={stickRef}
+                className="w-16 h-16 rounded-full bg-secondary border-2 border-input shadow-lg cursor-grab active:cursor-grabbing transition-transform duration-75"
+                onMouseDown={handleStart}
+                onTouchStart={handleStart}
+            ></div>
+        </div>
+    );
+};
+
 
 export default function TestingGroundPage() {
   const [grid, setGrid] = useState<Cell[][]>(initialGrid);
@@ -263,6 +331,32 @@ export default function TestingGroundPage() {
     }
   }, [gameLoop]);
 
+  const handleJoystickMove = useCallback((x: number) => {
+    if (x > 0.1) {
+        keys.current['d'] = true;
+        keys.current['arrowright'] = true;
+        keys.current['a'] = false;
+        keys.current['arrowleft'] = false;
+    } else if (x < -0.1) {
+        keys.current['a'] = true;
+        keys.current['arrowleft'] = true;
+        keys.current['d'] = false;
+        keys.current['arrowright'] = false;
+    } else {
+        keys.current['a'] = false;
+        keys.current['arrowleft'] = false;
+        keys.current['d'] = false;
+        keys.current['arrowright'] = false;
+    }
+  }, []);
+
+  const handleJoystickEnd = useCallback(() => {
+    keys.current['a'] = false;
+    keys.current['arrowleft'] = false;
+    keys.current['d'] = false;
+    keys.current['arrowright'] = false;
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
@@ -433,37 +527,16 @@ export default function TestingGroundPage() {
                 );
             })}
             <div className="md:hidden absolute bottom-4 left-4 right-4 flex justify-between items-center z-10">
-                <div className="flex gap-4">
-                    <Button
-                        variant="secondary"
-                        className="w-16 h-16 rounded-full opacity-80"
-                        onTouchStart={() => keys.current['a'] = true}
-                        onTouchEnd={() => {keys.current['a'] = false;}}
-                        onMouseDown={() => keys.current['a'] = true}
-                        onMouseUp={() => {keys.current['a'] = false;}}
-                    >
-                        <ArrowLeft className="h-8 w-8" />
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        className="w-16 h-16 rounded-full opacity-80"
-                        onTouchStart={() => keys.current['d'] = true}
-                        onTouchEnd={() => {keys.current['d'] = false;}}
-                        onMouseDown={() => keys.current['d'] = true}
-                        onMouseUp={() => {keys.current['d'] = false;}}
-                    >
-                        <ArrowRight className="h-8 w-8" />
-                    </Button>
-                </div>
+                <Joystick onMove={handleJoystickMove} onEnd={handleJoystickEnd} />
                 <Button
                     variant="secondary"
-                    className="w-16 h-16 rounded-full opacity-80"
-                    onTouchStart={() => keys.current['w'] = true}
-                    onTouchEnd={() => {keys.current['w'] = false;}}
-                    onMouseDown={() => keys.current['w'] = true}
-                    onMouseUp={() => {keys.current['w'] = false;}}
+                    className="w-20 h-20 rounded-full opacity-80"
+                    onTouchStart={() => { keys.current['w'] = true; keys.current[' '] = true; keys.current['arrowup'] = true; }}
+                    onTouchEnd={() => { keys.current['w'] = false; keys.current[' '] = false; keys.current['arrowup'] = false; }}
+                    onMouseDown={() => { keys.current['w'] = true; keys.current[' '] = true; keys.current['arrowup'] = true; }}
+                    onMouseUp={() => { keys.current['w'] = false; keys.current[' '] = false; keys.current['arrowup'] = false; }}
                 >
-                    <ArrowUp className="h-8 w-8" />
+                    <ArrowUp className="h-10 w-10" />
                 </Button>
             </div>
           </div>
