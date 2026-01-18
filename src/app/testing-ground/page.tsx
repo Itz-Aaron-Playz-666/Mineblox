@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Eraser, Square, User, Rabbit, Ghost, PiggyBank, type LucideIcon } from 'lucide-react';
+import { Eraser, Square, User, Rabbit, Ghost, PiggyBank, type LucideIcon, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react';
 import { type BlockColor, blockStyles, blockTypes } from '@/app/studio/components/block-palette';
 
 const GRID_SIZE = 20;
@@ -413,6 +413,40 @@ export default function TestingGroundPage() {
                     </div>
                 );
             })}
+            <div className="md:hidden absolute bottom-4 left-4 right-4 flex justify-between items-center z-10">
+                <div className="flex gap-4">
+                    <Button
+                        variant="secondary"
+                        className="w-16 h-16 rounded-full opacity-80"
+                        onTouchStart={() => keys.current['a'] = true}
+                        onTouchEnd={() => {keys.current['a'] = false;}}
+                        onMouseDown={() => keys.current['a'] = true}
+                        onMouseUp={() => {keys.current['a'] = false;}}
+                    >
+                        <ArrowLeft className="h-8 w-8" />
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        className="w-16 h-16 rounded-full opacity-80"
+                        onTouchStart={() => keys.current['d'] = true}
+                        onTouchEnd={() => {keys.current['d'] = false;}}
+                        onMouseDown={() => keys.current['d'] = true}
+                        onMouseUp={() => {keys.current['d'] = false;}}
+                    >
+                        <ArrowRight className="h-8 w-8" />
+                    </Button>
+                </div>
+                <Button
+                    variant="secondary"
+                    className="w-16 h-16 rounded-full opacity-80"
+                    onTouchStart={() => keys.current['w'] = true}
+                    onTouchEnd={() => {keys.current['w'] = false;}}
+                    onMouseDown={() => keys.current['w'] = true}
+                    onMouseUp={() => {keys.current['w'] = false;}}
+                >
+                    <ArrowUp className="h-8 w-8" />
+                </Button>
+            </div>
           </div>
         </main>
       </div>
