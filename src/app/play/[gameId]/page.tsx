@@ -2,7 +2,7 @@
 
 import { games } from '@/lib/placeholder-data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Play, User, Star, Users } from 'lucide-react';
@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { GameCard } from '@/components/game-card';
 import { useToast } from '@/hooks/use-toast';
 
-export default function PlayGamePage({ params }: { params: { gameId: string } }) {
+export default function PlayGamePage() {
+  const params = useParams<{ gameId: string }>();
   const game = games.find(g => g.id === params.gameId);
   const { toast } = useToast();
 
