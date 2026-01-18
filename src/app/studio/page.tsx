@@ -12,6 +12,7 @@ import {
   Save,
   Play,
   Share2,
+  Rabbit,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -20,6 +21,7 @@ import { ToolSuggester } from './components/tool-suggester';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { BlockPalette, type BlockColor, blockStyles } from './components/block-palette';
+import { MobPalette, type MobType, mobIcons } from './components/mob-palette';
 import { useToast } from '@/hooks/use-toast';
 
 const GRID_SIZE = 40;
@@ -27,15 +29,17 @@ const TILE_SIZE = 24;
 
 type Cell = {
   color: BlockColor | null;
+  mob: MobType | null;
 };
 
 const initialGrid = Array.from({ length: GRID_SIZE }, () =>
-  Array.from({ length: GRID_SIZE }, () => ({ color: null }))
+  Array.from({ length: GRID_SIZE }, () => ({ color: null, mob: null }))
 );
 
 const toolboxTools = [
   { icon: Box, label: 'Block Tool' },
   { icon: Brush, label: 'Paint Tool' },
+  { icon: Rabbit, label: 'Mob Tool' },
   { icon: Eraser, label: 'Erase Tool' },
   { icon: Move, label: 'Move Tool' },
 ];
@@ -94,6 +98,7 @@ export default function StudioPage() {
 
   const [grid, setGrid] = useState<Cell[][]>(initialGrid);
   const [selectedBlock, setSelectedBlock] = useState<BlockColor>('grass');
+  const [selectedMob, setSelectedMob] = useState<MobType>('pig');
   const [isMouseDown, setIsMouseDown] = useState(false);
 
   const handleToolSelect = (label: string) => {
@@ -122,7 +127,7 @@ export default function StudioPage() {
   };
 
   const handleCellInteraction = (row: number, col: number) => {
-    const newGrid = grid.map(r => r.slice());
+    const newGrid = grid.map(r => r.map(c => ({...c})));
     let changed = false;
 
     if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
@@ -130,11 +135,22 @@ export default function StudioPage() {
         newGrid[row][col].color = selectedBlock;
         changed = true;
       }
+    } else if (selectedTool === 'Mob Tool') {
+      if (newGrid[row][col].mob !== selectedMob) {
+          newGrid[row][col].mob = selectedMob;
+          changed = true;
+      }
     } else if (selectedTool === 'Erase Tool') {
+      let erasedSomething = false;
+      if (newGrid[row][col].mob !== null) {
+        newGrid[row][col].mob = null;
+        erasedSomething = true;
+      }
       if (newGrid[row][col].color !== null) {
         newGrid[row][col].color = null;
-        changed = true;
+        erasedSomething = true;
       }
+      changed = erasedSomething;
     }
 
     if (changed) {
@@ -143,6 +159,7 @@ export default function StudioPage() {
   };
 
   const showBlockPalette = selectedTool === 'Block Tool' || selectedTool === 'Paint Tool';
+  const showMobPalette = selectedTool === 'Mob Tool';
   
   const cursorStyle = () => {
     if (selectedTool === 'Move Tool') {
@@ -151,6 +168,7 @@ export default function StudioPage() {
     switch (selectedTool) {
       case 'Block Tool':
       case 'Paint Tool':
+      case 'Mob Tool':
         return 'copy';
       case 'Erase Tool':
         return 'crosshair';
@@ -204,26 +222,35 @@ export default function StudioPage() {
             onMouseLeave={() => setIsMouseDown(false)}
           >
             {grid.map((row, rowIndex) =>
-              row.map((cell, colIndex) => (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={cn(
-                    'border-l border-t',
-                    cell.color
-                      ? `${blockStyles[cell.color]} border-r-[3px] border-b-[3px]`
-                      : 'border-muted/50 bg-background/50 hover:bg-secondary/80'
-                  )}
-                  style={{ width: `${TILE_SIZE}px`, height: `${TILE_SIZE}px` }}
-                  onMouseDown={() => {
-                    handleCellInteraction(rowIndex, colIndex);
-                  }}
-                  onMouseEnter={() => {
-                    if (isMouseDown) {
+              row.map((cell, colIndex) => {
+                const MobIcon = cell.mob ? mobIcons[cell.mob] : null;
+                return (
+                  <div
+                    key={`${rowIndex}-${colIndex}`}
+                    className={cn(
+                      'border-l border-t relative',
+                      cell.color
+                        ? `${blockStyles[cell.color]} border-r-[3px] border-b-[3px]`
+                        : 'border-muted/50 bg-background/50 hover:bg-secondary/80'
+                    )}
+                    style={{ width: `${TILE_SIZE}px`, height: `${TILE_SIZE}px` }}
+                    onMouseDown={() => {
                       handleCellInteraction(rowIndex, colIndex);
-                    }
-                  }}
-                />
-              ))
+                    }}
+                    onMouseEnter={() => {
+                      if (isMouseDown) {
+                        handleCellInteraction(rowIndex, colIndex);
+                      }
+                    }}
+                  >
+                    {MobIcon && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <MobIcon className="w-[80%] h-[80%] text-foreground/80" />
+                      </div>
+                    )}
+                  </div>
+                )
+              })
             )}
           </div>
         </main>
@@ -231,6 +258,9 @@ export default function StudioPage() {
         <aside className="w-96 bg-background border-l overflow-y-auto">
           {showBlockPalette && (
             <BlockPalette selectedBlock={selectedBlock} onSelectBlock={setSelectedBlock} />
+          )}
+          {showMobPalette && (
+            <MobPalette selectedMob={selectedMob} onSelectMob={setSelectedMob} />
           )}
           <ToolSuggester />
         </aside>
