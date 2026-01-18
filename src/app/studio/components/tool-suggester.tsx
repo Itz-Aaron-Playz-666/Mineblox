@@ -1,7 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useState, useTransition } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useState, useTransition, useFormStatus } from 'react';
 import { suggestBuildingToolsAction, explainToolUsageAction, SuggestionState } from '@/app/studio/actions';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
