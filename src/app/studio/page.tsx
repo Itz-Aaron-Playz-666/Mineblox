@@ -210,7 +210,7 @@ export default function StudioPage() {
           </nav>
         </aside>
 
-        <main className="flex-1 flex items-center justify-center bg-grid overflow-hidden p-4">
+        <main className="flex-1 flex items-center justify-center bg-grid overflow-auto p-4">
           <div
             className="grid border-r border-b border-muted/50 shadow-2xl"
             style={{
