@@ -48,34 +48,42 @@ export default function PlayGamePage() {
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="relative aspect-video rounded-lg overflow-hidden bg-secondary mb-4">
-            {coverImage && (
-              <Image
-                src={coverImage.imageUrl}
-                alt={coverImage.description}
-                fill
-                className="object-cover"
-                data-ai-hint={coverImage.imageHint}
-              />
-            )}
             {!isPlaying ? (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <Button
-                  size="lg"
-                  className="bg-accent text-accent-foreground hover:bg-accent/90 scale-150"
-                  onClick={handlePlayClick}
-                >
-                  <Play className="mr-2 h-6 w-6" />
-                  Play
-                </Button>
-              </div>
+              <>
+                {coverImage && (
+                  <Image
+                    src={coverImage.imageUrl}
+                    alt={coverImage.description}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={coverImage.imageHint}
+                  />
+                )}
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <Button
+                    size="lg"
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 scale-150"
+                    onClick={handlePlayClick}
+                  >
+                    <Play className="mr-2 h-6 w-6" />
+                    Play
+                  </Button>
+                </div>
+              </>
             ) : (
-              <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center text-white p-4 text-center">
-                <h2 className="text-3xl font-bold mb-4">Playing: {game.title}</h2>
-                <p className="text-lg mb-8">This is a simulation of the game running.</p>
-                <Button variant="secondary" onClick={handleStopPlaying}>
-                  <X className="mr-2 h-5 w-5" />
-                  Exit Game
-                </Button>
+              <div className="absolute inset-0 bg-grid flex flex-col items-center justify-center p-4 text-center">
+                <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
+                  <h2 className="text-3xl font-bold mb-4 font-headline text-foreground">
+                    Playing: {game.title}
+                  </h2>
+                  <p className="text-lg mb-8 text-muted-foreground">
+                    This is a simulation of the game running.
+                  </p>
+                  <Button variant="secondary" onClick={handleStopPlaying}>
+                    <X className="mr-2 h-5 w-5" />
+                    Exit Game
+                  </Button>
+                </div>
               </div>
             )}
           </div>
