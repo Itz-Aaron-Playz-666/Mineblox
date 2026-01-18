@@ -16,16 +16,16 @@ export type BlockColor =
   | 'gold';
 
 export const blockStyles: Record<BlockColor, string> = {
-  stone: 'bg-slate-400 border-t-slate-300 border-l-slate-300 border-b-slate-500 border-r-slate-500',
-  dirt: 'bg-amber-800 border-t-amber-700 border-l-amber-700 border-b-amber-900 border-r-amber-900',
-  grass: 'bg-lime-500 border-t-lime-400 border-l-lime-400 border-b-lime-600 border-r-lime-600',
-  water: 'bg-sky-500 border-t-sky-400 border-l-sky-400 border-b-sky-600 border-r-sky-600',
-  sand: 'bg-yellow-300 border-t-yellow-200 border-l-yellow-200 border-b-yellow-400 border-r-yellow-400',
-  wood: 'bg-amber-600 border-t-amber-500 border-l-amber-500 border-b-amber-700 border-r-amber-700',
-  leaves: 'bg-green-600 border-t-green-500 border-l-green-500 border-b-green-700 border-r-green-700',
-  brick: 'bg-red-700 border-t-red-600 border-l-red-600 border-b-red-800 border-r-red-800',
-  glass: 'bg-sky-200/50 border-t-sky-100/50 border-l-sky-100/50 border-b-sky-300/50 border-r-sky-300/50',
-  gold: 'bg-yellow-500 border-t-yellow-400 border-l-yellow-400 border-b-yellow-600 border-r-yellow-600',
+  stone: 'bg-stone-500 border-t-stone-400 border-l-stone-400 border-b-stone-600 border-r-stone-600 shadow-inner',
+  dirt: 'bg-amber-800 border-t-amber-700 border-l-amber-700 border-b-amber-950 border-r-amber-950 shadow-inner',
+  grass: 'bg-lime-600 border-t-lime-500 border-l-lime-500 border-b-lime-700 border-r-lime-700 shadow-inner',
+  water: 'bg-sky-500/90 border-t-sky-400/90 border-l-sky-400/90 border-b-sky-600/90 border-r-sky-600/90 shadow-inner',
+  sand: 'bg-yellow-400 border-t-yellow-300 border-l-yellow-300 border-b-yellow-500 border-r-yellow-500 shadow-inner',
+  wood: 'bg-amber-700 border-t-amber-600 border-l-amber-600 border-b-amber-800 border-r-amber-800 shadow-inner',
+  leaves: 'bg-green-700 border-t-green-600 border-l-green-600 border-b-green-800 border-r-green-800 shadow-inner',
+  brick: 'bg-red-800 border-t-red-700 border-l-red-700 border-b-red-900 border-r-red-900 shadow-inner',
+  glass: 'bg-sky-200/50 border-t-sky-100/50 border-l-sky-100/50 border-b-sky-300/50 border-r-sky-300/50 backdrop-blur-sm',
+  gold: 'bg-yellow-500 border-t-yellow-400 border-l-yellow-400 border-b-yellow-600 border-r-yellow-600 shadow-inner',
 };
 
 
@@ -60,7 +60,7 @@ export function BlockPalette({ selectedBlock, onSelectBlock }: BlockPaletteProps
                 <button
                     onClick={() => onSelectBlock(b_type)}
                     className={cn(
-                    'w-12 h-12 rounded-md border-2 border-r-4 border-b-4 transition-all',
+                    'w-12 h-12 rounded-md border-2 border-r-[3px] border-b-[3px] transition-all',
                     blockStyles[b_type],
                     selectedBlock === b_type
                         ? 'ring-2 ring-offset-background ring-accent'

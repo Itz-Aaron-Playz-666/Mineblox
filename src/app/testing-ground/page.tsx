@@ -5,48 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Eraser, Square } from 'lucide-react';
+import { type BlockColor, blockStyles, blockTypes } from '@/app/studio/components/block-palette';
 
 const GRID_SIZE = 20;
 const TILE_SIZE = 30; // in pixels
 
 type Tool = 'draw' | 'erase';
-type BlockColor =
-  | 'stone'
-  | 'dirt'
-  | 'grass'
-  | 'water'
-  | 'sand'
-  | 'wood'
-  | 'leaves'
-  | 'brick'
-  | 'glass'
-  | 'gold';
-
-const blockStyles: Record<BlockColor, string> = {
-  stone: 'bg-slate-400 border-t-slate-300 border-l-slate-300 border-b-slate-500 border-r-slate-500',
-  dirt: 'bg-amber-800 border-t-amber-700 border-l-amber-700 border-b-amber-900 border-r-amber-900',
-  grass: 'bg-lime-500 border-t-lime-400 border-l-lime-400 border-b-lime-600 border-r-lime-600',
-  water: 'bg-sky-500 border-t-sky-400 border-l-sky-400 border-b-sky-600 border-r-sky-600',
-  sand: 'bg-yellow-300 border-t-yellow-200 border-l-yellow-200 border-b-yellow-400 border-r-yellow-400',
-  wood: 'bg-amber-600 border-t-amber-500 border-l-amber-500 border-b-amber-700 border-r-amber-700',
-  leaves: 'bg-green-600 border-t-green-500 border-l-green-500 border-b-green-700 border-r-green-700',
-  brick: 'bg-red-700 border-t-red-600 border-l-red-600 border-b-red-800 border-r-red-800',
-  glass: 'bg-sky-200/50 border-t-sky-100/50 border-l-sky-100/50 border-b-sky-300/50 border-r-sky-300/50',
-  gold: 'bg-yellow-500 border-t-yellow-400 border-l-yellow-400 border-b-yellow-600 border-r-yellow-600',
-};
-
-const blockTypes: BlockColor[] = [
-  'stone',
-  'dirt',
-  'grass',
-  'water',
-  'sand',
-  'wood',
-  'leaves',
-  'brick',
-  'glass',
-  'gold',
-];
 
 type Cell = {
   color: BlockColor | null;
@@ -124,7 +88,7 @@ export default function TestingGroundPage() {
                       <button
                         onClick={() => setSelectedBlock(b_type)}
                         className={cn(
-                          'w-10 h-10 rounded-md border-2 border-r-4 border-b-4 transition-all',
+                          'w-10 h-10 rounded-md border-2 border-r-[3px] border-b-[3px] transition-all',
                           blockStyles[b_type],
                           selectedBlock === b_type && tool === 'draw'
                             ? 'ring-2 ring-offset-background ring-accent'
@@ -163,7 +127,7 @@ export default function TestingGroundPage() {
                   className={cn(
                     'border-l border-t',
                     cell.color
-                      ? `${blockStyles[cell.color]} border-r-4 border-b-4`
+                      ? `${blockStyles[cell.color]} border-r-[3px] border-b-[3px]`
                       : 'border-muted bg-background hover:bg-secondary'
                   )}
                   style={{ width: `${TILE_SIZE}px`, height: `${TILE_SIZE}px` }}
