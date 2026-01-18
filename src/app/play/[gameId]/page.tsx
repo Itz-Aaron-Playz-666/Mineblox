@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { GameCard } from '@/components/game-card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 export default function PlayGamePage() {
   const params = useParams<{ gameId: string }>();
@@ -17,6 +18,15 @@ export default function PlayGamePage() {
   const { toast } = useToast();
   const [formattedDate, setFormattedDate] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedHotbarIndex, setSelectedHotbarIndex] = useState(0);
+
+  const hotbarTools = [
+    { icon: Sword },
+    { icon: Pickaxe },
+    { icon: Box },
+    { icon: null },
+    { icon: null },
+  ];
 
   useEffect(() => {
     if (game) {
@@ -92,17 +102,21 @@ export default function PlayGamePage() {
                             </div>
                         </div>
                         <div className="flex gap-1">
-                            <div className="w-12 h-12 bg-secondary/50 border-2 border-accent ring-2 ring-accent rounded-md flex items-center justify-center cursor-pointer">
-                                <Sword className="h-7 w-7 text-foreground" />
-                            </div>
-                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer">
-                                <Pickaxe className="h-7 w-7 text-foreground" />
-                            </div>
-                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer">
-                                <Box className="h-7 w-7 text-foreground" />
-                            </div>
-                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer" />
-                            <div className="w-12 h-12 bg-secondary/50 border-2 border-transparent hover:border-accent rounded-md flex items-center justify-center cursor-pointer" />
+                          {hotbarTools.map((tool, index) => (
+                            <button
+                              key={index}
+                              onClick={() => tool.icon && setSelectedHotbarIndex(index)}
+                              className={cn(
+                                "w-12 h-12 bg-secondary/50 border-2 rounded-md flex items-center justify-center",
+                                selectedHotbarIndex === index
+                                  ? "border-accent ring-2 ring-accent"
+                                  : "border-transparent",
+                                tool.icon ? "cursor-pointer hover:border-accent" : "cursor-default"
+                              )}
+                            >
+                              {tool.icon && <tool.icon className="h-7 w-7 text-foreground" />}
+                            </button>
+                          ))}
                         </div>
                     </div>
                 </div>
