@@ -9,11 +9,19 @@ import { Play, User, Star, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { GameCard } from '@/components/game-card';
 import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
 
 export default function PlayGamePage() {
   const params = useParams<{ gameId: string }>();
   const game = games.find(g => g.id === params.gameId);
   const { toast } = useToast();
+  const [formattedDate, setFormattedDate] = useState('');
+
+  useEffect(() => {
+    if (game) {
+      setFormattedDate(new Date(game.createdAt).toLocaleDateString());
+    }
+  }, [game]);
 
   if (!game) {
     notFound();
@@ -68,7 +76,7 @@ export default function PlayGamePage() {
               <Star className="h-5 w-5" />
               <span>{game.rating}/5.0</span>
             </div>
-            <Badge variant="outline">{new Date(game.createdAt).toLocaleDateString()}</Badge>
+            <Badge variant="outline">{formattedDate}</Badge>
           </div>
           <p className="text-lg">{game.description}</p>
         </div>
