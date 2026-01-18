@@ -13,6 +13,9 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -79,6 +82,12 @@ export function AppHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
+                <SheetDescription className="sr-only">
+                  A list of links to navigate the site.
+                </SheetDescription>
+              </SheetHeader>
               <Link href="/" className="mr-6 flex items-center space-x-2 mb-6">
                 <LogoIcon className="h-6 w-6 text-primary-foreground" />
                 <span className="font-bold font-headline">Mineblox Studio</span>
