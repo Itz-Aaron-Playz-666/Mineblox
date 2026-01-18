@@ -1,5 +1,5 @@
 import {
-  Cube,
+  Box,
   Brush,
   PaintBucket,
   Move,
@@ -17,7 +17,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ToolSuggester } from './components/tool-suggester';
 
 const toolboxTools = [
-  { icon: Cube, label: 'Block Tool' },
+  { icon: Box, label: 'Block Tool' },
   { icon: Brush, label: 'Paint Tool' },
   { icon: PaintBucket, label: 'Fill Tool' },
   { icon: Move, label: 'Move Tool' },
