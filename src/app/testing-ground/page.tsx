@@ -1,19 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Eraser, Square } from 'lucide-react';
+import { Eraser, Square, User } from 'lucide-react';
 import { type BlockColor, blockStyles, blockTypes } from '@/app/studio/components/block-palette';
 
 const GRID_SIZE = 20;
 const TILE_SIZE = 30; // in pixels
+const GRAVITY = 0.4;
+const MOVE_SPEED = 3;
+const JUMP_FORCE = -8;
 
 type Tool = 'draw' | 'erase';
 
 type Cell = {
   color: BlockColor | null;
+};
+
+type PlayerState = {
+  x: number; // position in pixels
+  y: number; // position in pixels
+  vx: number; // velocity x
+  vy: number; // velocity y
+  isOnGround: boolean;
 };
 
 const initialGrid = Array.from({ length: GRID_SIZE }, () =>
@@ -25,6 +36,10 @@ export default function TestingGroundPage() {
   const [selectedBlock, setSelectedBlock] = useState<BlockColor>('stone');
   const [tool, setTool] = useState<Tool>('draw');
   const [isMouseDown, setIsMouseDown] = useState(false);
+  
+  const [player, setPlayer] = useState<PlayerState>({ x: TILE_SIZE * 3, y: 0, vx: 0, vy: 0, isOnGround: false });
+  const keys = useRef<{ [key: string]: boolean }>({});
+  const gameLoopId = useRef<number>();
 
   const handleCellInteraction = (row: number, col: number) => {
     const newGrid = grid.map(r => r.slice());
@@ -37,22 +52,115 @@ export default function TestingGroundPage() {
   };
   
   const resetGrid = () => {
-    setGrid(Array.from({ length: GRID_SIZE }, () =>
-      Array.from({ length: GRID_SIZE }, () => ({ color: null }))
-    ));
+    setGrid(initialGrid);
+    setPlayer({ x: TILE_SIZE * 3, y: 0, vx: 0, vy: 0, isOnGround: false });
   }
+
+  // Keyboard input handlers
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = true; };
+    const handleKeyUp = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false; };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  const gameLoop = useCallback(() => {
+    setPlayer(p => {
+        let { x, y, vx, vy, isOnGround } = { ...p };
+
+        // Horizontal movement
+        if (keys.current['a'] || keys.current['arrowleft']) {
+            vx = -MOVE_SPEED;
+        } else if (keys.current['d'] || keys.current['arrowright']) {
+            vx = MOVE_SPEED;
+        } else {
+            vx = 0;
+        }
+        
+        // Jumping
+        if ((keys.current['w'] || keys.current['arrowup'] || keys.current[' ']) && isOnGround) {
+            vy = JUMP_FORCE;
+            isOnGround = false;
+        }
+
+        // Apply gravity
+        vy += GRAVITY;
+
+        // --- Collision Detection ---
+        
+        // X-axis movement and collision
+        x += vx;
+        const playerRectX = { left: x, right: x + TILE_SIZE, top: y, bottom: y + TILE_SIZE };
+        for (let row = 0; row < GRID_SIZE; row++) {
+            for (let col = 0; col < GRID_SIZE; col++) {
+                if (grid[row][col].color) {
+                    const blockRect = { left: col * TILE_SIZE, right: col * TILE_SIZE + TILE_SIZE, top: row * TILE_SIZE, bottom: row * TILE_SIZE + TILE_SIZE };
+                    if (playerRectX.right > blockRect.left && playerRectX.left < blockRect.right && playerRectX.bottom > blockRect.top && playerRectX.top < blockRect.bottom) {
+                        if (vx > 0) { x = blockRect.left - TILE_SIZE; } 
+                        else if (vx < 0) { x = blockRect.right; }
+                        vx = 0;
+                    }
+                }
+            }
+        }
+
+        // Y-axis movement and collision
+        isOnGround = false;
+        y += vy;
+        const playerRectY = { left: x, right: x + TILE_SIZE, top: y, bottom: y + TILE_SIZE };
+        for (let row = 0; row < GRID_SIZE; row++) {
+            for (let col = 0; col < GRID_SIZE; col++) {
+                if (grid[row][col].color) {
+                    const blockRect = { left: col * TILE_SIZE, right: col * TILE_SIZE + TILE_SIZE, top: row * TILE_SIZE, bottom: row * TILE_SIZE + TILE_SIZE };
+                    if (playerRectY.right > blockRect.left && playerRectY.left < blockRect.right && playerRectY.bottom > blockRect.top && playerRectY.top < blockRect.bottom) {
+                        if (vy > 0) { 
+                            y = blockRect.top - TILE_SIZE;
+                            isOnGround = true;
+                        } else if (vy < 0) {
+                             y = blockRect.bottom;
+                        }
+                        vy = 0;
+                    }
+                }
+            }
+        }
+        
+        // World bounds
+        if (x < 0) x = 0;
+        if (x + TILE_SIZE > GRID_SIZE * TILE_SIZE) x = GRID_SIZE * TILE_SIZE - TILE_SIZE;
+        if (y > GRID_SIZE * TILE_SIZE) { // Fell out of world, reset
+            return { x: TILE_SIZE * 3, y: 0, vx: 0, vy: 0, isOnGround: false };
+        }
+
+        return { x, y, vx, vy, isOnGround };
+    });
+
+    gameLoopId.current = requestAnimationFrame(gameLoop);
+  }, [grid]);
+
+  useEffect(() => {
+    gameLoopId.current = requestAnimationFrame(gameLoop);
+    return () => {
+      if (gameLoopId.current) {
+        cancelAnimationFrame(gameLoopId.current);
+      }
+    }
+  }, [gameLoop]);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
-        <h1 className="font-headline text-4xl font-bold">Testing Ground</h1>
+        <h1 className="font-headline text-4xl font-bold">Physics Testing Ground</h1>
         <p className="text-muted-foreground">
-          A simple 2D block-based world. Select a block, then click and drag to build!
+          Build a level and test the physics! Use A/D or Arrow Keys to move, and W, Space, or Up Arrow to jump.
         </p>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Toolbar */}
         <aside className="lg:w-64">
           <Card>
             <CardHeader>
@@ -108,10 +216,9 @@ export default function TestingGroundPage() {
           </Card>
         </aside>
 
-        {/* Grid */}
         <main className="flex-1 flex justify-center items-start">
           <div
-            className="grid border-r border-b border-muted"
+            className="relative grid border-r border-b border-muted bg-grid"
             style={{
               gridTemplateColumns: `repeat(${GRID_SIZE}, ${TILE_SIZE}px)`,
               width: `${GRID_SIZE * TILE_SIZE}px`,
@@ -128,7 +235,7 @@ export default function TestingGroundPage() {
                     'border-l border-t',
                     cell.color
                       ? `${blockStyles[cell.color]} border-r-[3px] border-b-[3px]`
-                      : 'border-muted bg-background hover:bg-secondary'
+                      : 'border-transparent bg-transparent hover:bg-secondary/50'
                   )}
                   style={{ width: `${TILE_SIZE}px`, height: `${TILE_SIZE}px` }}
                   onMouseDown={() => {
@@ -143,6 +250,17 @@ export default function TestingGroundPage() {
                 />
               ))
             )}
+            <div
+              className="absolute bg-accent rounded-sm border-2 border-accent-foreground flex items-center justify-center"
+              style={{
+                  left: player.x,
+                  top: player.y,
+                  width: TILE_SIZE,
+                  height: TILE_SIZE,
+              }}
+            >
+              <User className="w-5 h-5 text-accent-foreground" />
+            </div>
           </div>
         </main>
       </div>
