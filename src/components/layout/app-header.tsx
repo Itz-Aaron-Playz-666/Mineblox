@@ -27,6 +27,7 @@ const navLinks = [
   { href: '/', label: 'Discover' },
   { href: '/studio', label: 'Studio' },
   { href: '/avatar', label: 'Avatar' },
+  { href: '/testing-ground', label: 'Testing Ground' },
 ];
 
 export function AppHeader() {
