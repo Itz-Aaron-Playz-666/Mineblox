@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 import { BlockPalette, type BlockColor, blockStyles } from './components/block-palette';
 import { MobPalette, type MobType, mobIcons } from './components/mob-palette';
 import { useToast } from '@/hooks/use-toast';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { SoundGenerator } from './components/sound-generator';
 
 const GRID_SIZE = 40;
@@ -132,41 +132,40 @@ export default function StudioPage() {
 
   const handleCellInteraction = (row: number, col: number) => {
     setGrid(currentGrid => {
-      const newGrid = [...currentGrid];
-      newGrid[row] = [...currentGrid[row]];
-      const newCell = { ...newGrid[row][col] };
-      
+      const newGrid = currentGrid.map(r => r.map(c => ({ ...c })));
+      const cell = newGrid[row][col];
       let changed = false;
-
+  
       if (selectedTool === 'Block Tool' || selectedTool === 'Paint Tool') {
-        if (newCell.color !== selectedBlock) {
-          newCell.color = selectedBlock;
+        if (cell.color !== selectedBlock) {
+          cell.color = selectedBlock;
           changed = true;
         }
       } else if (selectedTool === 'Mob Tool') {
-        if (newCell.mob !== selectedMob) {
-          newCell.mob = selectedMob;
+        if (cell.mob !== selectedMob) {
+          cell.mob = selectedMob;
           changed = true;
         }
       } else if (selectedTool === 'Erase Tool') {
-        if (newCell.mob !== null) {
-          newCell.mob = null;
+        if (cell.mob !== null) {
+          cell.mob = null;
           changed = true;
         }
-        if (newCell.color !== null && newCell.color !== 'bedrock') {
-          newCell.color = null;
+        // Allow erasing bedrock in editor
+        if (cell.color !== null) {
+          cell.color = null;
           changed = true;
         }
       }
-
+  
       if (changed) {
-        newGrid[row][col] = newCell;
         return newGrid;
       }
       
       return currentGrid;
     });
   };
+  
 
   const showBlockPalette = selectedTool === 'Block Tool' || selectedTool === 'Paint Tool';
   const showMobPalette = selectedTool === 'Mob Tool';
@@ -248,6 +247,12 @@ export default function StudioPage() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[80px] p-0">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Tools Panel</SheetTitle>
+                <SheetDescription className="sr-only">
+                  A panel with building, world, and file management tools.
+                </SheetDescription>
+              </SheetHeader>
               {leftSidebarContent}
             </SheetContent>
           </Sheet>
@@ -262,6 +267,12 @@ export default function StudioPage() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[320px] sm:w-[400px] p-0 overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Creative Tools Panel</SheetTitle>
+                <SheetDescription className="sr-only">
+                  A panel with palettes for blocks and mobs, and AI-powered tools for suggestions and audio generation.
+                </SheetDescription>
+              </SheetHeader>
               {rightSidebarContent}
             </SheetContent>
           </Sheet>
